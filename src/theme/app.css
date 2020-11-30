@@ -1,0 +1,9 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+body .el-scrollbar__wrap {
+  overflow-x: hidden;
+}

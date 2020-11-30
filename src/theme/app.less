@@ -1,0 +1,44 @@
+html,
+body {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+
+// .el-scrollbar__wrap {
+// 	// overflow: auto;
+// 	overflow-x: hidden !important;
+// }	
+
+.exit {
+	display: block;
+	cursor: pointer;
+	width: 100%;
+	color: gray;
+	text-align: center;
+
+	&:hover {
+		color: #409EFF;
+	}
+}
+
+.el-popover {
+	min-width: 100px;
+	padding: 0;
+
+	.status-container {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+
+		.status-item {
+			line-height: 50px;
+			text-align: center;
+			&:hover {
+				background: rgb(245, 245, 245);
+				color: #409EFF;
+
+			}
+		}
+	}
+}
