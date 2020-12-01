@@ -1,19 +1,37 @@
 <template>
-  <div class="container">
-    <el-button-group style="margin-bottom: 5px">
-      <el-button v-popover:popover plain>修改状态</el-button>
-      <!-- <el-button plain>轻微违规</el-button>
-      <el-button plain>严重违规</el-button>
-      <el-button plain>封号</el-button> -->
-      <el-button plain>删除</el-button>
-    </el-button-group>
-    <!-- <div style="height: 500px; overflow: auto"> -->
-    <!-- <el-scrollbar style="height: calc(100% - 5px); width: calc(100% - 5px)"> -->
+  <div ref="container" class="container">
+    <el-row :gutter="20">
+      <el-col :span="12" :offset="0">
+        <el-button-group style="margin-bottom: 5px">
+          <el-button v-popover:popover plain>修改状态</el-button>
+          <el-button plain @click="delUsers()">删除</el-button>
+        </el-button-group>
+      </el-col>
+      <el-col :span="12" :offset="0">
+        <SearchInput @onSearch="search()" @onReset="reset()">
+          <el-input
+            slot="main"
+            v-model="searchData.name"
+            placeholder="用户名称"
+            clearable
+          ></el-input>
+          <div class="search-item" slot="sub">
+            <span class="search-label">角色：</span>
+            <el-input
+              v-model="searchData.role"
+              placeholder="角色"
+              clearable
+            ></el-input>
+          </div>
+        </SearchInput>
+      </el-col>
+    </el-row>
+
     <el-table
       :data="tableData"
       border
       style="width: 100%"
-      height="500"
+      :height="tableHeight"
       @selection-change="selectionChange"
     >
       <el-table-column align="center" prop="name" type="selection">
@@ -52,8 +70,6 @@
       ></el-table-column>
       <el-table-column align="center" prop="do" label="操作"> </el-table-column>
     </el-table>
-    <!-- </el-scrollbar> -->
-    <!-- </div> -->
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
@@ -70,44 +86,25 @@
         <li
           v-for="(value, name) in USER_STATUS"
           :key="name"
-          class="status-item"
+          class="status-item click-item"
           @click="changeStatus(name)"
         >
           {{ value }}
         </li>
       </ul>
     </el-popover>
-    <!-- <el-dialog :title="set_modify.title" :visible.sync="set_modify.visible">
-      <el-form
-        :model="form"
-        ref="form"
-        :rules="rules"
-        label-width="80px"
-        :inline="false"
-        size="normal"
-      >
-        <el-form-item label="">
-          <el-input v-model="form."></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
-          <el-button>取消</el-button>
-        </el-form-item>
-      </el-form>
-
-      <span slot="footer">
-        <el-button @click="set_modify.visible = false">取消</el-button>
-        <el-button type="primary" @click="modify">保存</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
 <script>
-import { getUsers, updateUserStatus } from "../api/api";
+import { getUsers, updateUserStatus, deleteUsers } from "../api/api";
 import { USER_STATUS } from "../common/eum";
+import SearchInput from "../components/SearchInput";
 export default {
   name: "",
+  components: {
+    SearchInput,
+  },
   data() {
     return {
       tableData: [],
@@ -115,25 +112,53 @@ export default {
       total: null,
       currentPage: 1,
       pageSize: 20,
-      set_modify: {
-        visible: false,
-        loading: true,
-        title: "修改用户信息",
-      },
-      modifyForm: {},
+      //   set_modify: {
+      //     visible: false,
+      //     loading: true,
+      //     title: "修改用户信息",
+      //   },
+      //   modifyForm: {},
       USER_STATUS: {},
+      tableHeight: null,
+      searchData: {
+        name: null,
+        role: null,
+        status: null,
+        sex: null,
+        createTime: null,
+      },
     };
   },
   async created() {
+    this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.USER_STATUS = USER_STATUS;
+    this.tableHeight = window.innerHeight - 160;
     this.getUsers();
   },
+  mounted() {
+    window.addEventListener("resize", () => {
+      this.tableHeight = window.innerHeight - 160;
+    });
+  },
   methods: {
+    search() {
+      this.getUsers();
+    },
+    reset() {
+      this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
+      this.pageSize = 20;
+      this.currentPage = 1;
+      this.search();
+    },
     async getUsers() {
-      let param = { pageSize: this.pageSize, page: this.currentPage };
+      let param = Object.assign(
+        {},
+        { pageSize: this.pageSize, page: this.currentPage },
+        this.searchData
+      );
       let res = await getUsers(param);
       this.tableData = res.data.users;
-      this.total = res.data.total;
+      this.total = res.total;
     },
 
     async changeStatus(statusCode) {
@@ -143,7 +168,14 @@ export default {
       };
       let res = await updateUserStatus(param);
       this.$message.success(res.msg);
-      this.getUsers();
+      if (res.code === 0) this.getUsers();
+    },
+    async delUsers() {
+      let res = await deleteUsers({
+        userIds: this.selection.map((x) => x.userId),
+      });
+      this.$message.success(res.msg);
+      if (res.code === 0) this.getUsers();
     },
     selectionChange(selection) {
       this.selection = selection;
@@ -153,7 +185,6 @@ export default {
       this.getUsers();
     },
     sizeChange(pageSize) {
-      console.log(pageSize);
       this.pageSize = pageSize;
       this.getUsers();
     },
@@ -163,6 +194,7 @@ export default {
 
 <style lang="less" scoped>
 .container {
+  height: 100%;
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;

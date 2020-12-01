@@ -20,3 +20,9 @@ export function updateUserStatus(param) {
 		return Promise.resolve(res.data)
 	})
 }
+export function deleteUsers(param) {
+	const url = `users/deleteUsers`;
+	return axios.post(url, param).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}

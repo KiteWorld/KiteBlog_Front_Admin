@@ -6,14 +6,19 @@ import '@/plugins/elementui.js'
 import 'element-ui/lib/theme-chalk/index.css'; //elementui 样式
 import '@/theme/app.less'
 import axios from 'axios'
+import Cookies from "js-cookie"
 
 axios.defaults.baseURL = "http://localhost:1874"
 
 Vue.config.productionTip = false
 
 axios.interceptors.request.use(function (config) {
-  console.log(config)
-  return config;
+  if (config.url !== "auth/adminLogin") {
+    config.headers["authorization"] = `Bearer ${Cookies.get(
+      "token"
+    )}`;
+  }
+  return config
 }, function (error) {
   console.log(error)
   return Promise.reject(error);

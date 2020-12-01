@@ -31,7 +31,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Cookies from "js-cookie";
 import { adminLogin } from "../api/api";
 export default {
@@ -76,7 +75,7 @@ export default {
           } else {
             Cookies.set("token", res.data.token);
             Cookies.set("name", res.data.name);
-            axios.defaults.headers.common["Authorization"] = res.data.token;
+
             this.$router.push({ name: "Main" });
           }
         }

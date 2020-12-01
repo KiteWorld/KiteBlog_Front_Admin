@@ -31,11 +31,10 @@
           <div class="history-record-tags"></div>
           <el-popover
             placement="bottom"
-            width="150"
             trigger="click"
             popper-class="logout-container"
           >
-            <a class="exit" @click="logout">退出</a>
+            <a class="click-item" @click="logout">退出</a>
             <span slot="reference" class="username">{{ userName }}</span>
           </el-popover>
         </div>
