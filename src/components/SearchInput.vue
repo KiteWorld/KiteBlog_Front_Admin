@@ -11,10 +11,8 @@
       </el-dropdown-menu>
     </el-dropdown>
     <el-button-group style="margin-left: 4px">
-      <el-button type="primary" size="default" @click="onSearch"
-        >搜索</el-button
-      >
-      <el-button size="default" @click="onReset">重置</el-button>
+      <el-button type="primary" size="small" @click="onSearch">搜索</el-button>
+      <el-button size="small" @click="onReset">重置</el-button>
     </el-button-group>
   </div>
 </template>
@@ -53,6 +51,7 @@ export default {
     display: flex;
     align-items: center;
     .search-label {
+      font-size: 13px;
       width: 100px;
       color: #606266;
     }

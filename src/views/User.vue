@@ -3,8 +3,8 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button v-popover:popover plain>修改状态</el-button>
-          <el-button plain @click="delUsers()">删除</el-button>
+          <el-button v-popover:popover plain size="small">修改状态</el-button>
+          <el-button plain size="small" @click="delUsers()">删除</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -13,13 +13,15 @@
             slot="main"
             v-model="searchData.name"
             placeholder="用户名称"
+            size="small"
             clearable
           ></el-input>
           <div class="search-item" slot="sub">
-            <span class="search-label">角色：</span>
+            <span class="search-label" >角色：</span>
             <el-input
               v-model="searchData.role"
               placeholder="角色"
+              size="small"
               clearable
             ></el-input>
           </div>
@@ -68,7 +70,7 @@
         prop="createTime"
         label="注册日期"
       ></el-table-column>
-      <el-table-column align="center" prop="do" label="操作"> </el-table-column>
+      <!-- <el-table-column align="center" prop="do" label="操作"> </el-table-column> -->
     </el-table>
     <el-pagination
       @size-change="sizeChange"
