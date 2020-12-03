@@ -4,3 +4,14 @@ export const USER_STATUS = {
 	"2": "严重违规",
 	"3": "封号"
 }
+export const USER_ROLE = {
+	"normal": "普通用户",
+	"VIP": "VIP",
+	"SVIP": "SVIP",
+}
+
+export const USER_SEX = {
+	"0": "未知",
+	"1": "男",
+	"2": "女",
+}

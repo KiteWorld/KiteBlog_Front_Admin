@@ -8,7 +8,7 @@
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
-        <SearchInput @onSearch="search()" @onReset="reset()">
+        <SearchInput @onSearch="search()" @onReset="reset()" ref="search">
           <el-input
             slot="main"
             v-model="searchData.name"
@@ -17,72 +17,73 @@
             clearable
           ></el-input>
           <div class="search-item" slot="sub">
-            <span class="search-label" >角色：</span>
-            <el-input
+            <span class="search-label">角色：</span>
+            <el-select
               v-model="searchData.role"
-              placeholder="角色"
-              size="small"
+              placeholder="请选择"
               clearable
-            ></el-input>
+              filterable
+              style="width: 100%"
+              size="small"
+            >
+              <el-option
+                v-for="(value, name) in USER_ROLE"
+                :key="name"
+                :value="name"
+                :label="value"
+                @click.native="$refs.search.$refs.messageDrop.show()"
+              >
+                <!-- $refs.search.$refs.messageDrop.show() 为了解决下拉选择之后，dropdown收起问题 -->
+                {{ value }}
+              </el-option>
+            </el-select>
+          </div>
+          <div class="search-item" slot="sub">
+            <span class="search-label">状态：</span>
+            <el-select
+              v-model="searchData.status"
+              placeholder="请选择"
+              clearable
+              filterable
+              style="width: 100%"
+              size="small"
+            >
+              <el-option
+                v-for="(value, name) in USER_STATUS"
+                :key="name"
+                :value="name"
+                :label="value"
+                @click.native="$refs.search.$refs.messageDrop.show()"
+              >
+                {{ value }}
+              </el-option>
+            </el-select>
+          </div>
+          <div class="search-item" slot="sub">
+            <span class="search-label">性别：</span>
+            <el-select
+              v-model="searchData.sex"
+              placeholder="请选择"
+              clearable
+              filterable
+              style="width: 100%"
+              size="small"
+            >
+              <el-option
+                v-for="(value, name) in USER_SEX"
+                :key="name"
+                :value="name"
+                :label="value"
+                @click.native="$refs.search.$refs.messageDrop.show()"
+              >
+                {{ value }}
+              </el-option>
+            </el-select>
           </div>
         </SearchInput>
       </el-col>
     </el-row>
-
-    <el-table
-      :data="tableData"
-      border
-      style="width: 100%"
-      :height="tableHeight"
-      @selection-change="selectionChange"
-    >
-      <el-table-column align="center" prop="name" type="selection">
-      </el-table-column>
-      <el-table-column align="center" prop="name" label="名字">
-      </el-table-column>
-      <el-table-column align="center" prop="role" label="角色">
-      </el-table-column>
-      <el-table-column align="center" prop="status" label="状态">
-        <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.status == 0">{{
-            USER_STATUS[scope.row.status]
-          }}</el-tag>
-          <el-tag type="warning" v-else-if="scope.row.status == 1">{{
-            USER_STATUS[scope.row.status]
-          }}</el-tag>
-          <el-tag type="danger" v-else-if="scope.row.status == 2">{{
-            USER_STATUS[scope.row.status]
-          }}</el-tag>
-          <el-tag type="info" v-else>{{
-            USER_STATUS[scope.row.status]
-          }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="sex" label="性别">
-      </el-table-column>
-      <el-table-column align="center" prop="icon" label="头像">
-        <template slot-scope="scope">
-          <img :src="scope.row.icon" v-if="scope.row.icon" class="user-icon" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="createTime"
-        label="注册日期"
-      ></el-table-column>
-      <!-- <el-table-column align="center" prop="do" label="操作"> </el-table-column> -->
-    </el-table>
-    <el-pagination
-      @size-change="sizeChange"
-      @current-change="currentChange"
-      :current-page="currentPage"
-      :page-sizes="[20, 50, 100, 200]"
-      :page-size="pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      style="margin-top: 6px; text-align: center"
-    >
-    </el-pagination>
+    <Table ref="usersTable" :tableProps="tableProps" :columns="columns"></Table>
     <el-popover ref="popover" placement="bottom" trigger="click">
       <ul class="status-container">
         <li
@@ -100,12 +101,12 @@
 
 <script>
 import { getUsers, updateUserStatus, deleteUsers } from "../api/api";
-import { USER_STATUS } from "../common/eum";
-import SearchInput from "../components/SearchInput";
+import { USER_STATUS, USER_ROLE, USER_SEX } from "../common/eum";
+// import SearchInput from "../components/SearchInput";
 export default {
   name: "",
   components: {
-    SearchInput,
+    // SearchInput,
   },
   data() {
     return {
@@ -114,13 +115,6 @@ export default {
       total: null,
       currentPage: 1,
       pageSize: 20,
-      //   set_modify: {
-      //     visible: false,
-      //     loading: true,
-      //     title: "修改用户信息",
-      //   },
-      //   modifyForm: {},
-      USER_STATUS: {},
       tableHeight: null,
       searchData: {
         name: null,
@@ -129,27 +123,53 @@ export default {
         sex: null,
         createTime: null,
       },
+      tableProps: {
+        selection: true,
+        setting: {
+          url: "users/queryUsers",
+        },
+      },
+      columns: [
+        { prop: "name", label: "名字" },
+        {
+          prop: "role",
+          label: "角色",
+          formatter: (row, column, cellValue) => USER_ROLE[cellValue], //加index eslint报错
+        },
+        {
+          prop: "status",
+          label: "状态",
+          formatter: (row, column, cellValue) => USER_STATUS[cellValue],
+        },
+        {
+          prop: "sex",
+          label: "性别",
+          formatter: (row, column, cellValue) => USER_SEX[cellValue],
+        },
+        { prop: "icon", label: "头像" },
+        { prop: "createTime", label: "注册日期" },
+      ],
     };
   },
   async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.USER_STATUS = USER_STATUS;
-    this.tableHeight = window.innerHeight - 160;
-    this.getUsers();
+    this.USER_ROLE = USER_ROLE;
+    this.USER_SEX = USER_SEX;
+    this.tableHeight = window.innerHeight - 150;
   },
   mounted() {
     window.addEventListener("resize", () => {
-      this.tableHeight = window.innerHeight - 160;
+      this.tableHeight = window.innerHeight - 150;
     });
   },
   methods: {
     search() {
-      this.getUsers();
+      this.tableProps.setting.params = this.searchData;
+      this.$refs.usersTable.searchTableData();
     },
     reset() {
       this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
-      this.pageSize = 20;
-      this.currentPage = 1;
       this.search();
     },
     async getUsers() {

@@ -1,6 +1,11 @@
 <template>
   <div class="search-container">
-    <el-dropdown>
+    <el-dropdown
+      ref="messageDrop"
+      trigger="click"
+      @keyup.enter.native="onSearch"
+      @mouseenter.native="$refs.messageDrop.show()"
+    >
       <div class="search-main">
         <slot name="main"></slot>
       </div>
@@ -24,7 +29,12 @@ export default {
   data() {
     return {
       test: null,
+      visible: false,
+      trigger: "hover",
     };
+  },
+  mounted() {
+    // this.$refs.messageDrop.show();
   },
   methods: {
     onSearch() {
@@ -32,6 +42,16 @@ export default {
     },
     onReset() {
       this.$emit("onReset");
+    },
+    visibleChange() {
+      // console.log(this.$refs.messageDrop);
+      // this.$refs.messageDrop.triggerElm.removeEventListener(
+      //   "mouseleave",
+      //   () => {
+      //     this.$refs.messageDrop.hide();
+      //   },
+      //   false
+      // );
     },
   },
 };
@@ -48,6 +68,7 @@ export default {
 .search-item-container {
   padding: 0 10px;
   .search-item {
+    margin: 5px 0;
     display: flex;
     align-items: center;
     .search-label {

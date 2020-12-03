@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="main">
-      <div class="left">
+      <div class="left" v-show="isCollapse">
         <el-scrollbar style="height: 100%">
           <el-menu
             class="left-menu"
@@ -28,6 +28,18 @@
       </div>
       <div class="right">
         <div class="header">
+          <div class="collapse-icon-container">
+            <i
+              class="el-icon-s-fold"
+              @click="isCollapse = false"
+              v-show="isCollapse"
+            ></i>
+            <i
+              class="el-icon-s-unfold"
+              @click="isCollapse = true"
+              v-show="!isCollapse"
+            ></i>
+          </div>
           <div class="history-record-tags"></div>
           <el-popover
             placement="bottom"
@@ -53,6 +65,7 @@ export default {
   data() {
     return {
       userName: null,
+      isCollapse: false,
     };
   },
   created() {
@@ -80,7 +93,7 @@ export default {
     .left {
       overflow: hidden;
       height: 100%;
-      width: 280px;
+      width: 220px;
       box-shadow: 0 0 10px rgb(211, 211, 211);
       /deep/ .left-menu {
         overflow: hidden;
@@ -99,6 +112,11 @@ export default {
         align-items: center;
         height: 50px;
         box-shadow: 0 0 10px rgb(211, 211, 211);
+        .collapse-icon-container{
+          cursor: pointer;
+          font-size: 22px;
+          margin-left: 10px;
+        }
         .history-record-tags {
           flex: 1;
           overflow: hidden;

@@ -26,3 +26,12 @@ export function deleteUsers(param) {
 		return Promise.resolve(res.data)
 	})
 }
+
+//Table组件公用
+export function getTableData(url, param) {
+	return axios.get(url, {
+		params: param
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
