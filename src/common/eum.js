@@ -4,6 +4,12 @@ export const USER_STATUS = {
 	"2": "严重违规",
 	"3": "封号"
 }
+export const USER_STATUS_TAG_TYPE = {
+	"0": "success",
+	"1": "warning",
+	"2": "danger",
+	"3": "info"
+}
 export const USER_ROLE = {
 	"normal": "普通用户",
 	"VIP": "VIP",

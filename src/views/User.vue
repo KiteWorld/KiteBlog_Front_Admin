@@ -100,11 +100,16 @@
 </template>
 
 <script>
-import { getUsers, updateUserStatus, deleteUsers } from "../api/api";
-import { USER_STATUS, USER_ROLE, USER_SEX } from "../common/eum";
+import { updateUserStatus, deleteUsers } from "../api/api";
+import {
+  USER_STATUS,
+  USER_ROLE,
+  USER_SEX,
+  USER_STATUS_TAG_TYPE,
+} from "../common/eum";
 // import SearchInput from "../components/SearchInput";
 export default {
-  name: "",
+  name: "User",
   components: {
     // SearchInput,
   },
@@ -139,14 +144,37 @@ export default {
         {
           prop: "status",
           label: "状态",
-          formatter: (row, column, cellValue) => USER_STATUS[cellValue],
+          render: (h, { row }) => {
+            return h(
+              "el-tag",
+              {
+                attrs: {
+                  type: USER_STATUS_TAG_TYPE[row.status],
+                },
+              },
+              USER_STATUS[row.status]
+            );
+          },
         },
         {
           prop: "sex",
           label: "性别",
           formatter: (row, column, cellValue) => USER_SEX[cellValue],
         },
-        { prop: "icon", label: "头像" },
+        {
+          prop: "icon",
+          label: "头像",
+          render: (h, { row }) => {
+            if (row.icon) {
+              return h("img", {
+                attrs: {
+                  class: "user-icon", // less可以使用 /deep/使样式生效
+                  src: row.icon,
+                },
+              });
+            }
+          },
+        },
         { prop: "createTime", label: "注册日期" },
       ],
     };
@@ -172,43 +200,21 @@ export default {
       this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
       this.search();
     },
-    async getUsers() {
-      let param = Object.assign(
-        {},
-        { pageSize: this.pageSize, page: this.currentPage },
-        this.searchData
-      );
-      let res = await getUsers(param);
-      this.tableData = res.data.users;
-      this.total = res.total;
-    },
-
     async changeStatus(statusCode) {
       let param = {
         status: statusCode,
-        userIds: this.selection.map((x) => x.userId),
+        userIds: this.$refs.usersTable.selection.map((x) => x.userId),
       };
       let res = await updateUserStatus(param);
       this.$message.success(res.msg);
-      if (res.code === 0) this.getUsers();
+      if (res.code === 0) this.search();
     },
     async delUsers() {
       let res = await deleteUsers({
-        userIds: this.selection.map((x) => x.userId),
+        userIds: this.$refs.usersTable.selection.map((x) => x.userId),
       });
       this.$message.success(res.msg);
-      if (res.code === 0) this.getUsers();
-    },
-    selectionChange(selection) {
-      this.selection = selection;
-    },
-    currentChange(currentPage) {
-      this.currentPage = currentPage;
-      this.getUsers();
-    },
-    sizeChange(pageSize) {
-      this.pageSize = pageSize;
-      this.getUsers();
+      if (res.code === 0) this.search();
     },
   },
 };
@@ -221,7 +227,7 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
   padding: 10px 4px;
-  .user-icon {
+  /deep/.user-icon {
     width: 50px;
     height: 50px;
     border-radius: 50%;

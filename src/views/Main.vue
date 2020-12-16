@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="main-container">
     <div class="main">
       <div class="left" v-show="isCollapse">
         <el-scrollbar style="height: 100%">
@@ -22,6 +22,10 @@
             <el-menu-item index="user">
               <i class="el-icon-document"></i>
               <span slot="title">用户管理</span>
+            </el-menu-item>
+            <el-menu-item index="Category">
+              <i class="el-icon-document"></i>
+              <span slot="title">分类管理</span>
             </el-menu-item>
           </el-menu>
         </el-scrollbar>
@@ -84,7 +88,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
+.main-container {
   height: 100%;
   .main {
     height: 100%;
@@ -107,12 +111,14 @@ export default {
     .right {
       flex: 1;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
       .header {
         display: flex;
         align-items: center;
         height: 50px;
         box-shadow: 0 0 10px rgb(211, 211, 211);
-        .collapse-icon-container{
+        .collapse-icon-container {
           cursor: pointer;
           font-size: 22px;
           margin-left: 10px;

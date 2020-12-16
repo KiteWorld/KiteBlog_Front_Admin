@@ -10,14 +10,21 @@ const routes = [{
     name: 'Main',
     component: Main,
     children: [{
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: () => import('../views/Dashboard')
-    }, {
-      path: '/user',
-      name: 'User',
-      component: () => import('../views/User')
-    }]
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('../views/Dashboard')
+      },
+      {
+        path: '/user',
+        name: 'User',
+        component: () => import('../views/User')
+      },
+      {
+        path: '/category',
+        name: 'Category',
+        component: () => import('../views/Category')
+      }
+    ]
   },
   {
     path: '/adminLogin',

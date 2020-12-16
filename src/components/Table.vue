@@ -54,7 +54,11 @@
 
 <script>
 import { getTableData } from "@/api/api";
+import Cell from "./Cell";
 export default {
+  components: {
+    Cell,
+  },
   name: "",
   props: {
     tableProps: {
