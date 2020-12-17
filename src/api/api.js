@@ -36,6 +36,14 @@ export function getCategories(param) {
 		return Promise.resolve(res.data)
 	})
 }
+export function updateCategoryOrder(param) {
+	const url = `category/updateCategoryOrder`;
+	return axios.get(url, {
+		params: param
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function insertCategories(param) {
 	const url = `category/insertCategories`;
 	return axios.post(url, param).then((res) => {
