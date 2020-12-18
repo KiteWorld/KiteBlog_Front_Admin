@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router/index'
-import 'normalize.css' //清楚自带样式
+import 'normalize.css' //清除自带样式
 import '@/plugins/elementui.js'
 import 'element-ui/lib/theme-chalk/index.css'; //elementui 样式
 import '@/theme/app.less'

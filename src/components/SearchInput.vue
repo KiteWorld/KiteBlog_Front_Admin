@@ -1,20 +1,24 @@
 <template>
   <div class="search-container">
-    <el-dropdown
+    <div
+      class="search-input-container"
       ref="messageDrop"
-      trigger="click"
-      @keyup.enter.native="onSearch"
-      @mouseenter.native="$refs.messageDrop.show()"
+      @keyup.enter="onSearch"
+      @mouseenter="showDropdown = true"
+      @click.stop=""
     >
+      <!-- @click.stop 阻止冒泡 -->
       <div class="search-main">
         <slot name="main"></slot>
       </div>
-      <el-dropdown-menu slot="dropdown">
-        <div class="search-item-container">
-          <slot name="sub"></slot>
+      <transition name="bounce">
+        <div class="dropdown" v-show="showDropdown">
+          <div class="search-item-container">
+            <slot name="sub"></slot>
+          </div>
         </div>
-      </el-dropdown-menu>
-    </el-dropdown>
+      </transition>
+    </div>
     <el-button-group style="margin-left: 4px">
       <el-button type="primary" size="small" @click="onSearch">搜索</el-button>
       <el-button size="small" @click="onReset">重置</el-button>
@@ -31,10 +35,13 @@ export default {
       test: null,
       visible: false,
       trigger: "hover",
+      showDropdown: false,
     };
   },
   mounted() {
-    // this.$refs.messageDrop.show();
+    document.onclick = () => {
+      this.showDropdown = false;
+    };
   },
   methods: {
     onSearch() {
@@ -61,8 +68,32 @@ export default {
 .search-container {
   display: flex;
   justify-content: flex-end;
-  .search-main {
-    width: 330px;
+  .search-input-container {
+    position: relative;
+    .search-main {
+      width: 330px;
+    }
+    .dropdown {
+      position: absolute;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgb(221, 221, 221);
+      background-color: #fff;
+      z-index: 999;
+      overflow: hidden;
+      &::before {
+        content: "";
+        top: -8px;
+        position: absolute;
+        border-right: 8px solid transparent;
+        border-left: 8px solid transparent;
+        border-bottom: 8px solid #fff;
+        border-radius: 4px;
+        transform: translateX(-50%);
+        left: 50%;
+      }
+    }
   }
 }
 .search-item-container {
@@ -77,5 +108,17 @@ export default {
       color: #606266;
     }
   }
+}
+.bounce-enter-active,
+.bounce-leave-active {
+  transition: all 0.05s ease;
+}
+.bounce-enter-to,
+.bounce-leave {
+  height: 100%;
+}
+.bounce-enter,
+.bounce-leave-to {
+  height: 0%;
 }
 </style>

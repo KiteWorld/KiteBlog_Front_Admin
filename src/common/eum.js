@@ -21,3 +21,10 @@ export const USER_SEX = {
 	"1": "男",
 	"2": "女",
 }
+
+export const APPROVESTATUS = {
+	"pendSubmit": "待提交",
+	"pending": "待审核",
+	"audited": "已审核",
+	"rejected": "已驳回"
+}

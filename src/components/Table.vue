@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="table-container">
     <el-table
       ref="baseTable"
       :data="tableData"
@@ -141,4 +141,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-table {
+  font-size: 13px;
+  /deep/th.gutter {
+    display: table-cell !important;
+  }
+  /deep/td,
+  /deep/th {
+    padding: 4px 0;
+  }
+}
 </style>

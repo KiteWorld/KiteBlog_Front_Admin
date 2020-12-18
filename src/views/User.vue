@@ -31,7 +31,6 @@
                 :key="name"
                 :value="name"
                 :label="value"
-                @click.native="$refs.search.$refs.messageDrop.show()"
               >
                 <!-- $refs.search.$refs.messageDrop.show() 为了解决下拉选择之后，dropdown收起问题 -->
                 {{ value }}
@@ -53,7 +52,6 @@
                 :key="name"
                 :value="name"
                 :label="value"
-                @click.native="$refs.search.$refs.messageDrop.show()"
               >
                 {{ value }}
               </el-option>
@@ -74,7 +72,6 @@
                 :key="name"
                 :value="name"
                 :label="value"
-                @click.native="$refs.search.$refs.messageDrop.show()"
               >
                 {{ value }}
               </el-option>
@@ -107,12 +104,8 @@ import {
   USER_SEX,
   USER_STATUS_TAG_TYPE,
 } from "../common/eum";
-// import SearchInput from "../components/SearchInput";
 export default {
   name: "User",
-  components: {
-    // SearchInput,
-  },
   data() {
     return {
       tableData: [],

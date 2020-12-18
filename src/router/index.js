@@ -23,6 +23,16 @@ const routes = [{
         path: '/category',
         name: 'Category',
         component: () => import('../views/Category')
+      },
+      {
+        path: '/article',
+        name: 'Article',
+        component: () => import('../views/Article')
+      },
+      {
+        path: '/articleconfig',
+        name: 'ArticleConfig',
+        component: () => import('../views/ArticleConfig')
       }
     ]
   },

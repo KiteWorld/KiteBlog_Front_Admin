@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <div class="main">
-      <div class="left" v-show="isCollapse">
+      <div class="left" v-show="isCollapse" @click.stop="">
         <el-scrollbar style="height: 100%">
           <el-menu
             class="left-menu"
@@ -15,22 +15,30 @@
               <i class="el-icon-setting"></i>
               <span slot="title">Dashboard</span>
             </el-menu-item>
-            <el-menu-item index="article">
+            <el-submenu index="article">
+              <template slot="title">
+                <i class="el-icon-location"></i>
+                <span>文章管理</span>
+              </template>
+              <el-menu-item index="article">文章列表</el-menu-item>
+              <el-menu-item index="articleconfig">文章相关配置</el-menu-item>
+            </el-submenu>
+            <!-- <el-menu-item index="article">
               <i class="el-icon-menu"></i>
               <span slot="title">文章管理</span>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item index="user">
               <i class="el-icon-document"></i>
               <span slot="title">用户管理</span>
             </el-menu-item>
-            <el-menu-item index="Category">
+            <el-menu-item index="category">
               <i class="el-icon-document"></i>
               <span slot="title">分类管理</span>
             </el-menu-item>
           </el-menu>
         </el-scrollbar>
       </div>
-      <div class="right">
+      <div class="right" ref="right">
         <div class="header">
           <div class="collapse-icon-container">
             <i
@@ -69,7 +77,7 @@ export default {
   data() {
     return {
       userName: null,
-      isCollapse: false,
+      isCollapse: true,
     };
   },
   created() {
@@ -144,5 +152,17 @@ export default {
 }
 /deep/.el-menu {
   margin: 0;
+}
+.el-menu-item {
+  &:hover {
+    background-color: #f1f1f1 !important;
+    color: #409eff;
+    i {
+      color: #409eff;
+    }
+  }
+}
+.el-menu-item.is-active {
+  background-color: #f1f1f1 !important;
 }
 </style>

@@ -222,7 +222,7 @@ export default {
         }
       }
       if (res.code === 0) {
-        data.isEdit = false;
+        this.$set(data, "isEdit", false);
         if (res.data) {
           this.$set(data, "categoryId", res.data.categoryId || null);
         }
@@ -242,7 +242,7 @@ export default {
 <style lang="less" scoped>
 .container {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   overflow: hidden;
   box-sizing: border-box;
 }
