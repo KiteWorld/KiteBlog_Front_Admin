@@ -22,9 +22,16 @@ export const USER_SEX = {
 	"2": "女",
 }
 
-export const APPROVESTATUS = {
+export const APPROVE_STATUS = {
 	"pendSubmit": "待提交",
 	"pending": "待审核",
 	"audited": "已审核",
 	"rejected": "已驳回"
+}
+
+export const ARTICLE_TYPE = {
+	"normal": "普通",
+	"recommend": "推荐",
+	"hot": "热门",
+	"top": "置顶"
 }

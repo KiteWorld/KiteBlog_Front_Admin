@@ -128,6 +128,7 @@ export default {
   },
   created() {
     this.getCategories();
+    // this.getCategoriesList();
   },
   watch: {
     filterText(val) {
@@ -139,6 +140,11 @@ export default {
       let res = await getCategories();
       this.catergreyData = res.data.dataList;
     },
+    // async getCategoriesList() {
+    //   let res = await getCategories();
+    //   this.catergreySeletion = res.data.dataList;
+    //   console.log(this.catergreySeletion);
+    // },
     // 原本更新可以公用一个接口，为了避免逻辑混淆，维护成本。单独做了个更新的接口
 
     // 1、order是排序，当改变order时，我们需要改变分类的位置，最简单无脑的办法就是 重新调用一下获取分类的接口

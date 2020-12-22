@@ -12,11 +12,12 @@
           <el-button plain size="small" @click="deleteArticle()"
             >删除</el-button
           >
-          <el-button plain size="small" @click="modifyCat()"
+          <el-button plain size="small" v-popover:catPopover
             >修改分类</el-button
           >
-          <el-button plain size="small" @click="recommend()"
-            >推荐首页</el-button
+
+          <el-button plain size="small" v-popover:recommendPopover
+            >推荐设置</el-button
           >
         </el-button-group>
       </el-col>
@@ -24,15 +25,34 @@
         <SearchInput @onSearch="search()" @onReset="reset()" ref="search">
           <el-input
             slot="main"
-            v-model="searchData.name"
+            v-model="searchData.title"
             placeholder="文章标题"
             size="small"
             clearable
           ></el-input>
           <div class="search-item" slot="sub">
+            <span class="search-label">分类：</span>
+            <el-select
+              v-model="searchData.categoryId"
+              placeholder="请选择"
+              clearable
+              filterable
+              size="small"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in catergorySeletion"
+                :key="item.categoryId"
+                :label="item.categoryName"
+                :value="item.categoryId"
+              >
+              </el-option>
+            </el-select>
+          </div>
+          <div class="search-item" slot="sub">
             <span class="search-label">创建人：</span>
             <el-input
-              v-model="searchData.creatorName"
+              v-model="searchData.userName"
               placeholder="请输入"
               size="small"
               clearable
@@ -48,31 +68,37 @@
               style="width: 100%"
               size="small"
             >
-              <!-- <el-option
-                v-for="(value, name) in USER_STATUS"
+              <el-option
+                v-for="(value, name) in APPROVE_STATUS"
                 :key="name"
                 :value="name"
                 :label="value"
-                @click.native="$refs.search.$refs.messageDrop.show()"
               >
                 {{ value }}
-              </el-option> -->
+              </el-option>
             </el-select>
           </div>
           <div class="search-item" slot="sub">
             <span class="search-label">创建时间：</span>
-            <el-time-picker
+            <el-date-picker
+              type="datetimerange"
               v-model="searchData.createDate"
               size="small"
-              arrow-control
-              :picker-options="{
-                selectableRange: '18:30:00 - 20:30:00',
-              }"
               style="width: 100%"
-              placeholder="任意时间点"
-              @click.native="$refs.search.$refs.messageDrop.show()"
+              value-format="yyyy-MM-dd HH:mm:ss"
             >
-            </el-time-picker>
+            </el-date-picker>
+          </div>
+          <div class="search-item" slot="sub">
+            <span class="search-label">更新时间：</span>
+            <el-date-picker
+              type="datetimerange"
+              v-model="searchData.updateDate"
+              size="small"
+              style="width: 100%"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            >
+            </el-date-picker>
           </div>
         </SearchInput>
       </el-col>
@@ -125,11 +151,69 @@
         </el-button-group>
       </span>
     </el-dialog>
+    <!-- el-popver popoverVisible为true为隐藏，一脸问号 -->
+    <el-popover
+      ref="catPopover"
+      v-model="catPopoverVisible"
+      placement="bottom"
+      width="200"
+      trigger="click"
+      @show="showPopoverHandle('catPopoverVisible')"
+    >
+      <el-select
+        v-model="categorySeletionItem"
+        placeholder="选择分类"
+        clearable
+        filterable
+        size="small"
+        style="margin: 10px"
+      >
+        <el-option
+          v-for="item in catergorySeletion"
+          :key="item.categoryId"
+          :label="item.categoryName"
+          :value="item.categoryId"
+        >
+        </el-option>
+      </el-select>
+      <el-button
+        size="small"
+        @click="updateArticleCat"
+        style="width: calc(100% + 4px); border-bottom: none"
+        >保存修改</el-button
+      >
+    </el-popover>
+    <el-popover
+      ref="recommendPopover"
+      v-model="recomPopoverVisible"
+      placement="bottom"
+      width="150"
+      trigger="click"
+      @show="showPopoverHandle('recomPopoverVisible')"
+    >
+      <ul class="status-container">
+        <li
+          v-for="(value, key) in ARTICLE_TYPE"
+          :key="key"
+          class="status-item click-item"
+          @click="changeType(key)"
+        >
+          {{ value }}
+        </li>
+      </ul>
+    </el-popover>
   </div>
 </template>
 <script>
-import { deleteArticle, auditedAticle, rejectArticle } from "@/api/api";
-import { APPROVESTATUS } from "@/common/eum";
+import {
+  deleteArticle,
+  auditedAticle,
+  rejectArticle,
+  getCategoriesList,
+  updateArticleCat,
+  updateArticleType,
+} from "@/api/api";
+import { APPROVE_STATUS, ARTICLE_TYPE } from "@/common/eum";
 import { checkTableSelect } from "@/common/mixin";
 export default {
   name: "Article",
@@ -193,7 +277,7 @@ export default {
           prop: "status",
           label: "状态",
           formatter: (row, columns, cellValue) => {
-            return APPROVESTATUS[cellValue];
+            return APPROVE_STATUS[cellValue];
           },
         },
         {
@@ -204,8 +288,16 @@ export default {
           prop: "userName",
           label: "创建人",
         },
+        {
+          prop: "articleType",
+          label: "文章推荐",
+          formatter: (row, columns, cellValue) => {
+            return ARTICLE_TYPE[cellValue];
+          },
+        },
         { prop: "createDate", label: "创建时间" },
         { prop: "updateDate", label: "更新时间" },
+        { prop: "rejectRemark", label: "驳回备注" },
       ],
       set_reject: {
         visible: false,
@@ -215,9 +307,19 @@ export default {
         },
       },
       templateList: [],
+      catergorySeletion: [],
+      categorySeletionItem: null,
+      catPopoverVisible: false,
+      recomPopoverVisible: false,
+      rows: [],
     };
   },
-  created() {},
+  created() {
+    this.getCategoriesList();
+    this.APPROVE_STATUS = APPROVE_STATUS;
+    this.ARTICLE_TYPE = ARTICLE_TYPE;
+    this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
+  },
   methods: {
     search() {
       this.tableProps.setting.params = this.searchData;
@@ -228,10 +330,10 @@ export default {
       this.search();
     },
     async showRejectDailog() {
-      let row = this.checkTableSelect("articleTable");
-      if (row) {
+      let rows = this.checkTableSelect("articleTable", "single");
+      if (rows) {
         this.set_reject.visible = true;
-        this.set_reject.data.articleIds = row.map((x) => x.articleId);
+        this.set_reject.data.articleIds = rows.map((x) => x.articleId);
       }
     },
     async rejectOk() {
@@ -250,8 +352,10 @@ export default {
       this.set_reject.data.rejectRemark = null;
     },
     async auditedAticle() {
+      let rows = this.checkTableSelect("articleTable");
+      if (!rows) return;
       let res = await auditedAticle({
-        articleIds: this.$refs.articleTable.selection.map((x) => x.articleId),
+        articleIds: rows.map((x) => x.articleId),
       });
       if (res.code === 0) {
         this.$message.success(res.msg);
@@ -259,15 +363,51 @@ export default {
       }
     },
     async deleteArticle() {
+      let rows = this.checkTableSelect("articleTable");
+      if (!rows) return;
       let res = await deleteArticle({
-        articleIds: this.$refs.articleTable.selection.map((x) => x.articleId),
+        articleIds: rows.map((x) => x.articleId),
       });
       if (res.code === 0) {
         this.$message.success(res.msg);
         this.search();
       }
     },
+    async updateArticleCat() {
+      let res = await updateArticleCat({
+        articleIds: this.rows.map((x) => x.articleId),
+        categoryId: this.categorySeletionItem,
+      });
+      if (res.code === 0) {
+        this.$message.success(res.msg);
+        this.catPopoverVisible = false;
+        this.search();
+      }
+    },
+    async changeType(articleType) {
+      let params = {
+        articleType: articleType,
+        articleIds: this.rows.map((x) => x.articleId),
+      };
+      let res = await updateArticleType(params);
+      this.$message.success(res.msg);
+      if (res.code === 0) {
+        this.recomPopoverVisible = false;
+        this.search();
+      }
+    },
     changeTemplate() {},
+    async getCategoriesList() {
+      let res = await getCategoriesList();
+      this.catergorySeletion = res.data.dataList;
+    },
+    showPopoverHandle(popoverVisible) {
+      this[popoverVisible] = false; //popover 默认显示值取反。判断是否勾选时，要先传false隐藏
+      let rows = this.checkTableSelect("articleTable");
+      if (!rows) return;
+      this[popoverVisible] = true;
+      this.rows = rows;
+    },
   },
 };
 </script>

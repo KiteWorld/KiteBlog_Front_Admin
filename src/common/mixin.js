@@ -3,7 +3,7 @@ export const checkTableSelect = {
 		return {}
 	},
 	methods: {
-		checkTableSelect(tableName, type = "single") {
+		checkTableSelect(tableName, type = "multiple") {
 			let row = this.$refs[tableName ? tableName : "baseTable"].selection;
 			if (type == "single") {
 				if (row.length !== 1) {

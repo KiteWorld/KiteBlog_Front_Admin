@@ -36,6 +36,14 @@ export function getCategories(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function getCategoriesList(params) {
+	const url = `category/getCategoriesList`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function updateCategoryOrder(params) {
 	const url = `category/updateCategoryOrder`;
 	return axios.get(url, {
@@ -62,6 +70,7 @@ export function deleteCategory(params) {
 		return Promise.resolve(res.data)
 	})
 }
+
 
 // ---------文章---------
 
@@ -91,7 +100,18 @@ export function rejectArticle(params) {
 		return Promise.resolve(res.data)
 	})
 }
-
+export function updateArticleCat(params) {
+	const url = `article/updateArticleCat`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function updateArticleType(params) {
+	const url = `article/updateArticleType`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 //Table组件公用
 export function getTableData(url, params) {
 	return axios.get(url, {

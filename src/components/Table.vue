@@ -12,6 +12,7 @@
         align="center"
         prop="name"
         type="selection"
+        fixed="left"
         v-if="tableProps.selection"
       >
       </el-table-column>
