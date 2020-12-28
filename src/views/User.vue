@@ -11,7 +11,7 @@
         <SearchInput @onSearch="search()" @onReset="reset()" ref="search">
           <el-input
             slot="main"
-            v-model="searchData.name"
+            v-model="searchData.userName"
             placeholder="用户名称"
             size="small"
             clearable
@@ -19,7 +19,7 @@
           <div class="search-item" slot="sub">
             <span class="search-label">角色：</span>
             <el-select
-              v-model="searchData.role"
+              v-model="searchData.userRole"
               placeholder="请选择"
               clearable
               filterable
@@ -40,7 +40,7 @@
           <div class="search-item" slot="sub">
             <span class="search-label">状态：</span>
             <el-select
-              v-model="searchData.status"
+              v-model="searchData.userStatus"
               placeholder="请选择"
               clearable
               filterable
@@ -60,7 +60,7 @@
           <div class="search-item" slot="sub">
             <span class="search-label">性别：</span>
             <el-select
-              v-model="searchData.sex"
+              v-model="searchData.userSex"
               placeholder="请选择"
               clearable
               filterable
@@ -77,11 +77,28 @@
               </el-option>
             </el-select>
           </div>
+          <div class="search-item" slot="sub">
+            <span class="search-label">注册时间：</span>
+            <el-date-picker
+              type="datetimerange"
+              v-model="searchData.createDate"
+              size="small"
+              style="width: 100%"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            >
+            </el-date-picker>
+          </div>
         </SearchInput>
       </el-col>
     </el-row>
     <Table ref="usersTable" :tableProps="tableProps" :columns="columns"></Table>
-    <el-popover ref="popover" placement="bottom" trigger="click">
+    <el-popover
+      ref="popover"
+      v-model="propverVisible"
+      placement="bottom"
+      trigger="click"
+      @show="showPopoverHandle('propverVisible', 'usersTable')"
+    >
       <ul class="status-container">
         <li
           v-for="(value, name) in USER_STATUS"
@@ -104,8 +121,11 @@ import {
   USER_SEX,
   USER_STATUS_TAG_TYPE,
 } from "../common/eum";
+import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
+
 export default {
   name: "User",
+  mixins: [checkTableSelect, showPopoverHandle],
   data() {
     return {
       tableData: [],
@@ -114,12 +134,14 @@ export default {
       currentPage: 1,
       pageSize: 20,
       tableHeight: null,
+      rows: null,
+      propverVisible: false,
       searchData: {
-        name: null,
-        role: null,
-        status: null,
-        sex: null,
-        createTime: null,
+        userName: null,
+        userRole: null,
+        userStatus: null,
+        userSex: null,
+        userCreateDate: null,
       },
       tableProps: {
         selection: true,
@@ -128,34 +150,34 @@ export default {
         },
       },
       columns: [
-        { prop: "name", label: "名字" },
+        { prop: "userName", label: "名字" },
         {
-          prop: "role",
+          prop: "userRole",
           label: "角色",
           formatter: (row, column, cellValue) => USER_ROLE[cellValue], //加index eslint报错
         },
         {
-          prop: "status",
+          prop: "userStatus",
           label: "状态",
           render: (h, { row }) => {
             return h(
               "el-tag",
               {
                 attrs: {
-                  type: USER_STATUS_TAG_TYPE[row.status],
+                  type: USER_STATUS_TAG_TYPE[row.userStatus],
                 },
               },
-              USER_STATUS[row.status]
+              USER_STATUS[row.userStatus]
             );
           },
         },
         {
-          prop: "sex",
+          prop: "userSex",
           label: "性别",
           formatter: (row, column, cellValue) => USER_SEX[cellValue],
         },
         {
-          prop: "icon",
+          prop: "userIcon",
           label: "头像",
           render: (h, { row }) => {
             if (row.icon) {
@@ -168,7 +190,7 @@ export default {
             }
           },
         },
-        { prop: "createTime", label: "注册日期" },
+        { prop: "createDate", label: "注册日期" },
       ],
     };
   },
@@ -203,8 +225,10 @@ export default {
       if (res.code === 0) this.search();
     },
     async delUsers() {
+      let rows = this.checkTableSelect("usersTable");
+      if (!rows) return;
       let res = await deleteUsers({
-        userIds: this.$refs.usersTable.selection.map((x) => x.userId),
+        userIds: rows.map((x) => x.userId),
       });
       this.$message.success(res.msg);
       if (res.code === 0) this.search();

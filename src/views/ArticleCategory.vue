@@ -28,9 +28,8 @@
       </div>
       <el-scrollbar style="height: 100%">
         <el-tree
-          :data="catergreyData"
+          :data="categoryData"
           node-key="categoryId"
-          default-expand-all
           :expand-on-click-node="false"
           :props="defaultProps"
           :filter-node-method="filterNode"
@@ -117,7 +116,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      catergreyData: [],
+      categoryData: [],
       categoryNameTemp: null,
       defaultProps: {
         children: "children",
@@ -126,9 +125,14 @@ export default {
       filterText: null,
     };
   },
-  created() {
-    this.getCategories();
+  async created() {
+    await this.getCategories();
     // this.getCategoriesList();
+  },
+  beforeMount() {},
+  mounted() {},
+  updated() {
+    console.timeEnd();
   },
   watch: {
     filterText(val) {
@@ -138,7 +142,8 @@ export default {
   methods: {
     async getCategories() {
       let res = await getCategories();
-      this.catergreyData = res.data.dataList;
+      this.categoryData = res.data.dataList;
+      console.time();
     },
     // async getCategoriesList() {
     //   let res = await getCategories();
@@ -176,7 +181,7 @@ export default {
         children: [],
         isEdit: true,
       };
-      this.catergreyData.push(params);
+      this.categoryData.push(params);
     },
     append(node, data) {
       const newChild = {

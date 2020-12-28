@@ -3,19 +3,12 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="auditedAticle()"
-            >审核</el-button
-          >
-          <el-button plain size="small" @click="showRejectDailog()"
-            >驳回</el-button
-          >
           <el-button plain size="small" @click="deleteArticle()"
             >删除</el-button
           >
           <el-button plain size="small" v-popover:catPopover
             >修改分类</el-button
           >
-
           <el-button plain size="small" v-popover:recommendPopover
             >推荐设置</el-button
           >
@@ -209,6 +202,7 @@ import {
   deleteArticle,
   auditedAticle,
   rejectArticle,
+  getCategoriesList,
   updateArticleCat,
   updateArticleType,
 } from "@/api/api";
@@ -229,44 +223,24 @@ export default {
       tableProps: {
         selection: true,
         setting: {
-          url: "article/queryArticles",
+          //   url: "category/queryArticles",
         },
       },
       columns: [
         {
-          prop: "title",
+          prop: "hotPointContent",
           label: "标题",
-          render: (h, { row }) => {
-            return h(
-              "a",
-              {
-                style: {
-                  color: "#409EFF",
-                  cursor: "pointer",
-                },
-                on: {
-                  click: () => {
-                    this.$message.success(
-                      "跳转到文章详细页面和前端共用(后面开发toC时补上)"
-                    );
-                  },
-                },
-              },
-              row.title
-            );
-          },
         },
         { prop: "likeCount", label: "点赞数" },
-        { prop: "viewCount", label: "浏览量" },
         {
-          prop: "banner",
+          prop: "hotPointPictrue",
           label: "封面图",
           render: (h, { row }) => {
-            if (row.banner) {
+            if (row.hotPointPictrue) {
               return h("img", {
                 attrs: {
                   class: "banner-img", // less可以使用 /deep/使样式生效
-                  src: row.banner,
+                  src: row.hotPointPictrue,
                 },
               });
             }
@@ -276,7 +250,7 @@ export default {
           prop: "status",
           label: "状态",
           formatter: (row, columns, cellValue) => {
-            return APPROVE_STATUS[cellValue];
+            return cellValue;
           },
         },
         {
@@ -291,7 +265,7 @@ export default {
           prop: "articleType",
           label: "文章推荐",
           formatter: (row, columns, cellValue) => {
-            return ARTICLE_TYPE[cellValue];
+            return cellValue;
           },
         },
         { prop: "createDate", label: "创建时间" },
@@ -314,6 +288,7 @@ export default {
     };
   },
   created() {
+    this.getCategoriesList();
     this.APPROVE_STATUS = APPROVE_STATUS;
     this.ARTICLE_TYPE = ARTICLE_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
@@ -395,6 +370,17 @@ export default {
       }
     },
     changeTemplate() {},
+    async getCategoriesList() {
+      let res = await getCategoriesList();
+      this.catergorySeletion = res.data.dataList;
+    },
+    // showPopoverHandle(popoverVisible) {
+    //   this[popoverVisible] = false; //popover 默认显示值取反。判断是否勾选时，要先传false隐藏
+    //   let rows = this.checkTableSelect("articleTable");
+    //   if (!rows) return;
+    //   this[popoverVisible] = true;
+    //   this.rows = rows;
+    // },
   },
 };
 </script>

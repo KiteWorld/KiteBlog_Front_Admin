@@ -27,14 +27,22 @@
               <i class="el-icon-menu"></i>
               <span slot="title">文章管理</span>
             </el-menu-item> -->
-            <el-menu-item index="user">
+            <el-menu-item index="User">
               <i class="el-icon-document"></i>
               <span slot="title">用户管理</span>
             </el-menu-item>
-            <el-menu-item index="category">
+            <el-submenu index="ArticleCategory">
+              <template slot="title">
+                <i class="el-icon-location"></i>
+                <span>分类管理</span>
+              </template>
+              <el-menu-item index="ArticleCategory">文章分类</el-menu-item>
+              <el-menu-item index="HotPointcategory">沸点分类</el-menu-item>
+            </el-submenu>
+            <!-- <el-menu-item index="category">
               <i class="el-icon-document"></i>
               <span slot="title">分类管理</span>
-            </el-menu-item>
+            </el-menu-item> -->
           </el-menu>
         </el-scrollbar>
       </div>

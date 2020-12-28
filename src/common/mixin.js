@@ -20,3 +20,17 @@ export const checkTableSelect = {
 		},
 	}
 }
+export const showPopoverHandle = {
+	data() {
+		return {}
+	},
+	methods: {
+		showPopoverHandle(popoverVisible, tableRef) {
+			this[popoverVisible] = false; //popover 默认显示值取反。判断是否勾选时，要先传false隐藏
+			let rows = this.checkTableSelect(tableRef);
+			if (!rows) return;
+			this[popoverVisible] = true;
+			this.rows = rows;
+		},
+	}
+}

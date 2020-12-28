@@ -20,9 +20,14 @@ const routes = [{
         component: () => import('../views/User')
       },
       {
-        path: '/category',
-        name: 'Category',
-        component: () => import('../views/Category')
+        path: '/articleCategory',
+        name: 'ArticleCategory',
+        component: () => import('../views/ArticleCategory')
+      },
+      {
+        path: '/hotPointCategory',
+        name: 'HotPointCategory',
+        component: () => import('../views/HotPointCategory')
       },
       {
         path: '/article',

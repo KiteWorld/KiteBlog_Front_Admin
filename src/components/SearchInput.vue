@@ -12,7 +12,7 @@
         <slot name="main"></slot>
       </div>
       <transition name="bounce">
-        <div class="dropdown" v-show="showDropdown">
+        <div class="dropdown" v-show="showDropdown && $scopedSlots.sub">
           <div class="search-item-container">
             <slot name="sub"></slot>
           </div>
@@ -37,6 +37,11 @@ export default {
       trigger: "hover",
       showDropdown: false,
     };
+  },
+  watch: {
+    showDropdown() {
+      // console.log(this.$scopedSlots.sub);
+    },
   },
   mounted() {
     document.onclick = () => {

@@ -64,6 +64,12 @@ export function updateCategory(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function updateHotPointCategory(params) {
+	const url = `category/updateHotPointCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function deleteCategory(params) {
 	const url = `category/deleteCategory`;
 	return axios.post(url, params).then((res) => {
