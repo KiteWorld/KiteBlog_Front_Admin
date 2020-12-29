@@ -151,7 +151,6 @@
         </el-button-group>
       </span>
     </el-dialog>
-    <!-- el-popver popoverVisible为true为隐藏，一脸问号 -->
     <el-popover
       ref="catPopover"
       v-model="catPopoverVisible"
@@ -211,6 +210,7 @@ import {
   rejectArticle,
   updateArticleCat,
   updateArticleType,
+  getCategoriesList,
 } from "@/api/api";
 import { APPROVE_STATUS, ARTICLE_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
@@ -313,10 +313,11 @@ export default {
       rows: [],
     };
   },
-  created() {
+  async created() {
     this.APPROVE_STATUS = APPROVE_STATUS;
     this.ARTICLE_TYPE = ARTICLE_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
+    this.catergorySeletion = (await getCategoriesList()).data.dataList;
   },
   methods: {
     search() {

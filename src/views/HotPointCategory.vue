@@ -4,7 +4,7 @@
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
           <el-button plain size="small" @click="addCat">添加分类</el-button>
-          <el-button plain size="small" @click="transferHotPoint"
+          <el-button plain size="small" v-popover:catPopover
             >分类沸点迁移</el-button
           >
           <el-button plain size="small" @click="getHotPointCategories"
@@ -30,6 +30,43 @@
       :columns="columns"
       :dataList="dataList"
     ></Table>
+    <el-popover
+      ref="catPopover"
+      v-model="catPopoverVisible"
+      placement="bottom"
+      width="200"
+      trigger="click"
+      @show="
+        showPopoverHandle(
+          'catPopoverVisible',
+          'hotPointCategoryTable',
+          'single'
+        )
+      "
+    >
+      <el-select
+        v-model="categorySeletionItem"
+        placeholder="选择分类"
+        clearable
+        filterable
+        size="small"
+        style="margin: 10px"
+      >
+        <el-option
+          v-for="item in catergorySeletion"
+          :key="item.categoryId"
+          :label="item.categoryName"
+          :value="item.categoryId"
+        >
+        </el-option>
+      </el-select>
+      <el-button
+        size="small"
+        @click="transferHotPoint"
+        style="width: calc(100% + 4px); border-bottom: none"
+        >保存修改</el-button
+      >
+    </el-popover>
     <!-- <el-dialog
       title="添加分类"
       :visible.sync="set_add.visible"
@@ -80,11 +117,13 @@ import {
   getHotPointCategories,
   updateHotPointCategory,
   deleteHotPointCategory,
+  transferHotPointCategory,
+  getHotPointCategoriesList,
 } from "@/api/api";
-import { checkTableSelect } from "@/common/mixin";
+import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 export default {
   name: "HotPointCategory",
-  mixins: [checkTableSelect],
+  mixins: [checkTableSelect, showPopoverHandle],
   data() {
     return {
       searchData: {},
@@ -97,8 +136,9 @@ export default {
           categoryStatus: true,
         },
       },
-      row: null,
+      rows: null,
       tableProps: {
+        selection: true,
         setting: {
           pageSize: 50,
         },
@@ -251,11 +291,15 @@ export default {
           },
         },
       ],
+      catergorySeletion: [],
+      categorySeletionItem: null,
+      catPopoverVisible: false,
     };
   },
-  created() {
+  async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.getHotPointCategories();
+    this.catergorySeletion = (await getHotPointCategoriesList()).data.dataList;
   },
   methods: {
     search() {
@@ -281,7 +325,17 @@ export default {
         hotPointCount: 0,
       });
     },
-    transferHotPoint() {},
+    async transferHotPoint() {
+      let res = await transferHotPointCategory({
+        categoryId: this.rows[0].categoryId,
+        afterCategoryId: this.categorySeletionItem,
+      });
+      if (res.code !== 0) {
+        return this.$message.warning(res.msg);
+      }
+      this.$message.success(res.msg);
+      this.getHotPointCategories()
+    },
     //使用 el-dialog 方式添加分类
     // addCat() {
     //   this.set_add.visible = true;

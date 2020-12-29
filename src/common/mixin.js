@@ -22,12 +22,14 @@ export const checkTableSelect = {
 }
 export const showPopoverHandle = {
 	data() {
-		return {}
+		return {
+			rows: []
+		}
 	},
 	methods: {
-		showPopoverHandle(popoverVisible, tableRef) {
+		showPopoverHandle(popoverVisible, tableRef, type = "multiple") {
 			this[popoverVisible] = false; //popover 默认显示值取反。判断是否勾选时，要先传false隐藏
-			let rows = this.checkTableSelect(tableRef);
+			let rows = this.checkTableSelect(tableRef, type);
 			if (!rows) return;
 			this[popoverVisible] = true;
 			this.rows = rows;

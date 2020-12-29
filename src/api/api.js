@@ -44,6 +44,14 @@ export function getCategoriesList(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function getHotPointCategoriesList(params) {
+	const url = `category/getHotPointCategoriesList`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function updateCategoryOrder(params) {
 	const url = `category/updateCategoryOrder`;
 	return axios.get(url, {
@@ -95,6 +103,18 @@ export function getHotPointCategories(params) {
 }
 export function deleteHotPointCategory(params) {
 	const url = `category/deleteHotPointCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function transferHotPointCategory(params) {
+	const url = `category/transferHotPointCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function transferCategory(params) {
+	const url = `category/transferCategory`;
 	return axios.post(url, params).then((res) => {
 		return Promise.resolve(res.data)
 	})

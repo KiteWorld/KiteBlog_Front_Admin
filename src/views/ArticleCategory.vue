@@ -21,8 +21,15 @@
             class="add-root-button"
             type="default"
             size="small"
+            v-popover:catPopover
+            >分类文章迁移</el-button
+          >
+          <el-button
+            class="add-root-button"
+            type="default"
+            size="small"
             @click="getCategories"
-            >刷新分类排序</el-button
+            >刷新[分类排序]</el-button
           >
         </el-button-group>
       </div>
@@ -30,9 +37,10 @@
         <el-tree
           :data="categoryData"
           node-key="categoryId"
-          :expand-on-click-node="false"
           :props="defaultProps"
           :filter-node-method="filterNode"
+          show-checkbox
+          check-strictly
           ref="catTree"
         >
           <div class="custom-tree-node" slot-scope="{ node, data }">
@@ -99,6 +107,37 @@
           </div>
         </el-tree>
       </el-scrollbar>
+      <el-popover
+        ref="catPopover"
+        v-model="catPopoverVisible"
+        placement="bottom"
+        width="200"
+        trigger="click"
+        @show="showPopoverHandle('catPopoverVisible', 'catTree')"
+      >
+        <el-select
+          v-model="categorySeletionItem"
+          placeholder="选择分类"
+          clearable
+          filterable
+          size="small"
+          style="margin: 10px"
+        >
+          <el-option
+            v-for="item in catergorySeletion"
+            :key="item.categoryId"
+            :label="item.categoryName"
+            :value="item.categoryId"
+          >
+          </el-option>
+        </el-select>
+        <el-button
+          size="small"
+          style="width: calc(100% + 4px); border-bottom: none"
+          @click="transferCateArticle"
+          >保存修改</el-button
+        >
+      </el-popover>
     </div>
   </div>
 </template>
@@ -109,10 +148,13 @@ import {
   insertCategories,
   deleteCategory,
   updateCategory,
-  // updateCategoryOrder,
+  getCategoriesList,
+  transferCategory,
 } from "../api/api";
+import { checkTableSelect } from "@/common/mixin";
 export default {
   name: "Catergrey",
+  mixins: [checkTableSelect],
   data() {
     return {
       dialogVisible: false,
@@ -123,11 +165,15 @@ export default {
         label: "categoryName",
       },
       filterText: null,
+      catergorySeletion: [],
+      categorySeletionItem: null,
+      catPopoverVisible: false,
+      nodeKeys: [],
     };
   },
   async created() {
-    await this.getCategories();
-    // this.getCategoriesList();
+    this.getCategories();
+    this.catergorySeletion = (await getCategoriesList()).data.dataList;
   },
   beforeMount() {},
   mounted() {},
@@ -245,6 +291,26 @@ export default {
     filterNode(value, data) {
       if (!value) return true;
       return data.categoryName.indexOf(value) !== -1;
+    },
+    showPopoverHandle(popoverVisible) {
+      this[popoverVisible] = false;
+      this.nodeKeys = this.$refs.catTree.getCheckedKeys();
+      if (this.nodeKeys.length !== 1) {
+        return this.$message.warning("请选择一项进行操作");
+      }
+      this[popoverVisible] = true;
+    },
+
+    async transferCateArticle() {
+      let res = await transferCategory({
+        categoryId: this.nodeKeys[0],
+        afterCategoryId: this.categorySeletionItem,
+      });
+      if (res.code !== 0) {
+        return this.$message.warning(res.msg);
+      }
+      this.$message.success(res.msg);
+      this.getCategories();
     },
   },
 };
