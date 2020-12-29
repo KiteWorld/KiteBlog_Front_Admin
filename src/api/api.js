@@ -58,6 +58,7 @@ export function insertCategories(params) {
 		return Promise.resolve(res.data)
 	})
 }
+
 export function updateCategory(params) {
 	const url = `category/updateCategory`;
 	return axios.post(url, params).then((res) => {
@@ -77,7 +78,27 @@ export function deleteCategory(params) {
 	})
 }
 
+export function insertHotPointCategories(params) {
+	const url = `category/insertHotPointCategories`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 
+export function getHotPointCategories(params) {
+	const url = `category/getHotPointCategories`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function deleteHotPointCategory(params) {
+	const url = `category/deleteHotPointCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 // ---------文章---------
 
 export function queryArticles(params) {

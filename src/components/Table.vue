@@ -83,15 +83,17 @@ export default {
       pageSize: 20,
       tableHeight: null,
       selection: [],
+      setting: {},
     };
   },
   async created() {
     this.tableHeight = this.tableProps.height || window.innerHeight - 150;
-    this.pageSize = this.tableProps.setting.pageSize || 20;
-    this.currentPage = this.tableProps.setting.page || 1;
+    this.setting = this.tableProps.setting || {};
+    this.pageSize = this.setting.pageSize || 20;
+    this.currentPage = this.setting.page || 1;
   },
   async beforeMount() {
-    if (this.tableProps.setting.url) {
+    if (this.setting.url) {
       await this.getTableData();
     } else {
       this.tableData = this.dataList;
@@ -104,7 +106,12 @@ export default {
   },
   watch: {
     dataList() {
-      this.tableData = this.dataList;
+      if (this.setting.url) {
+        this.tableData = this.dataList;
+      } else {
+        this.localPageChange();
+        this.total = this.dataList.length;
+      }
     },
   },
   methods: {
@@ -116,21 +123,36 @@ export default {
     },
     currentChange(currentPage) {
       this.currentPage = currentPage;
-      this.getTableData();
+      if (this.setting.url) {
+        this.getTableData();
+      } else {
+        this.localPageChange();
+      }
     },
     sizeChange(pageSize) {
       this.pageSize = pageSize;
-      this.getTableData();
+      if (this.setting.url) {
+        this.getTableData();
+      } else {
+        this.localPageChange();
+      }
     },
     async getTableData() {
       const param = Object.assign(
         {},
         { pageSize: this.pageSize, page: this.currentPage },
-        this.tableProps.setting.params || {}
+        this.setting.params || {}
       );
-      let res = await getTableData(this.tableProps.setting.url, param);
+      let res = await getTableData(this.setting.url, param);
       this.total = res.total;
       this.tableData = res.data.dataList;
+    },
+    localPageChange() {
+      const index = this.currentPage * this.pageSize;
+      this.tableData = this.dataList.slice(
+        index - this.pageSize,
+        index > this.dataList.length ? this.dataList.length : index
+      );
     },
     searchTableData() {
       this.pageSize = 20;
