@@ -29,7 +29,12 @@ export const APPROVE_STATUS = {
 	"rejected": "已驳回"
 }
 
-export const ARTICLE_TYPE = {
+export const HOTPOINT_STATUS = {
+	"normal": "普通",
+	"remove": "移除",
+}
+
+export const ARTICLE_HOTPOINT_TYPE = {
 	"normal": "普通",
 	"recommend": "推荐",
 	"hot": "热门",

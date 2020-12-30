@@ -159,6 +159,37 @@ export function updateArticleType(params) {
 		return Promise.resolve(res.data)
 	})
 }
+// ------------沸点--------------
+export function queryHotPoint(params) {
+	const url = `hotPoint/queryHotPoint`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function deleteHotPoint(params) {
+	const url = `hotPoint/deleteHotPoint`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function updateHotPointCat(params) {
+	const url = `hotPoint/updateHotPointCat`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function updateHotPointType(params) {
+	const url = `hotPoint/updateHotPointType`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function updateHotPointStatus(params) {
+	const url = `hotPoint/updateHotPointStatus`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 //Table组件公用
 export function getTableData(url, params) {
 	return axios.get(url, {

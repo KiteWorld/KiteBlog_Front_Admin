@@ -39,10 +39,10 @@
               <el-menu-item index="ArticleCategory">文章分类</el-menu-item>
               <el-menu-item index="HotPointcategory">沸点分类</el-menu-item>
             </el-submenu>
-            <!-- <el-menu-item index="category">
+            <el-menu-item index="hotPoint">
               <i class="el-icon-document"></i>
-              <span slot="title">分类管理</span>
-            </el-menu-item> -->
+              <span slot="title">沸点管理</span>
+            </el-menu-item>
           </el-menu>
         </el-scrollbar>
       </div>

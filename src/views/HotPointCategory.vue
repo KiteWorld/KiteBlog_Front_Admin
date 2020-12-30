@@ -64,7 +64,7 @@
         size="small"
         @click="transferHotPoint"
         style="width: calc(100% + 4px); border-bottom: none"
-        >保存修改</el-button
+        >确认迁移</el-button
       >
     </el-popover>
     <!-- <el-dialog
@@ -326,15 +326,23 @@ export default {
       });
     },
     async transferHotPoint() {
+      const loading = this.$loading({
+        lock: true,
+        text: "数据迁移中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       let res = await transferHotPointCategory({
         categoryId: this.rows[0].categoryId,
         afterCategoryId: this.categorySeletionItem,
       });
+      loading.close();
       if (res.code !== 0) {
         return this.$message.warning(res.msg);
       }
+      this.getHotPointCategories();
+      this.catPopoverVisible = false;
       this.$message.success(res.msg);
-      this.getHotPointCategories()
     },
     //使用 el-dialog 方式添加分类
     // addCat() {

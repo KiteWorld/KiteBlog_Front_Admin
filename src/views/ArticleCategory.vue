@@ -113,7 +113,7 @@
         placement="bottom"
         width="200"
         trigger="click"
-        @show="showPopoverHandle('catPopoverVisible', 'catTree')"
+        @show="showPopoverHandle()"
       >
         <el-select
           v-model="categorySeletionItem"
@@ -135,7 +135,7 @@
           size="small"
           style="width: calc(100% + 4px); border-bottom: none"
           @click="transferCateArticle"
-          >保存修改</el-button
+          >确认迁移</el-button
         >
       </el-popover>
     </div>
@@ -292,25 +292,33 @@ export default {
       if (!value) return true;
       return data.categoryName.indexOf(value) !== -1;
     },
-    showPopoverHandle(popoverVisible) {
-      this[popoverVisible] = false;
+    showPopoverHandle() {
+      this.catPopoverVisible = false;
       this.nodeKeys = this.$refs.catTree.getCheckedKeys();
       if (this.nodeKeys.length !== 1) {
         return this.$message.warning("请选择一项进行操作");
       }
-      this[popoverVisible] = true;
+      this.catPopoverVisible = true;
     },
 
     async transferCateArticle() {
+      const loading = this.$loading({
+        lock: true,
+        text: "数据迁移中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       let res = await transferCategory({
         categoryId: this.nodeKeys[0],
         afterCategoryId: this.categorySeletionItem,
       });
+      loading.close();
       if (res.code !== 0) {
         return this.$message.warning(res.msg);
       }
       this.$message.success(res.msg);
       this.getCategories();
+      this.catPopoverVisible = false;
     },
   },
 };

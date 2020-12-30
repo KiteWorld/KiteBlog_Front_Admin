@@ -38,6 +38,11 @@ const routes = [{
         path: '/articleconfig',
         name: 'ArticleConfig',
         component: () => import('../views/ArticleConfig')
+      },
+      {
+        path: '/hotPoint',
+        name: 'HotPoint',
+        component: () => import('../views/HotPoint')
       }
     ]
   },

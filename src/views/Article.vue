@@ -192,7 +192,7 @@
     >
       <ul class="status-container">
         <li
-          v-for="(value, key) in ARTICLE_TYPE"
+          v-for="(value, key) in ARTICLE_HOTPOINT_TYPE"
           :key="key"
           class="status-item click-item"
           @click="changeType(key)"
@@ -212,7 +212,7 @@ import {
   updateArticleType,
   getCategoriesList,
 } from "@/api/api";
-import { APPROVE_STATUS, ARTICLE_TYPE } from "@/common/eum";
+import { APPROVE_STATUS, ARTICLE_HOTPOINT_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 export default {
   name: "Article",
@@ -291,7 +291,7 @@ export default {
           prop: "articleType",
           label: "文章推荐",
           formatter: (row, columns, cellValue) => {
-            return ARTICLE_TYPE[cellValue];
+            return ARTICLE_HOTPOINT_TYPE[cellValue];
           },
         },
         { prop: "createDate", label: "创建时间" },
@@ -315,7 +315,7 @@ export default {
   },
   async created() {
     this.APPROVE_STATUS = APPROVE_STATUS;
-    this.ARTICLE_TYPE = ARTICLE_TYPE;
+    this.ARTICLE_HOTPOINT_TYPE = ARTICLE_HOTPOINT_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.catergorySeletion = (await getCategoriesList()).data.dataList;
   },

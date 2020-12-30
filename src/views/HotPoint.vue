@@ -3,8 +3,12 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="deleteArticle()"
-            >删除</el-button
+          <el-button plain size="small" @click="search()">刷新</el-button>
+          <el-button plain size="small" @click="deleteHotPoint()"
+            >删除（数据库中移除）</el-button
+          >
+          <el-button plain size="small" v-popover:statusPopover
+            >修改状态</el-button
           >
           <el-button plain size="small" v-popover:catPopover
             >修改分类</el-button
@@ -18,8 +22,8 @@
         <SearchInput @onSearch="search()" @onReset="reset()" ref="search">
           <el-input
             slot="main"
-            v-model="searchData.title"
-            placeholder="文章标题"
+            v-model="searchData.hotPointContent"
+            placeholder="沸点内容"
             size="small"
             clearable
           ></el-input>
@@ -54,7 +58,7 @@
           <div class="search-item" slot="sub">
             <span class="search-label">状态：</span>
             <el-select
-              v-model="searchData.status"
+              v-model="searchData.hotPointStatus"
               placeholder="请选择"
               clearable
               filterable
@@ -62,7 +66,7 @@
               size="small"
             >
               <el-option
-                v-for="(value, name) in APPROVE_STATUS"
+                v-for="(value, name) in HOTPOINT_STATUS"
                 :key="name"
                 :value="name"
                 :label="value"
@@ -82,22 +86,11 @@
             >
             </el-date-picker>
           </div>
-          <div class="search-item" slot="sub">
-            <span class="search-label">更新时间：</span>
-            <el-date-picker
-              type="datetimerange"
-              v-model="searchData.updateDate"
-              size="small"
-              style="width: 100%"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            >
-            </el-date-picker>
-          </div>
         </SearchInput>
       </el-col>
     </el-row>
     <Table
-      ref="articleTable"
+      ref="HotPointTable"
       :tableProps="tableProps"
       :columns="columns"
     ></Table>
@@ -144,14 +137,32 @@
         </el-button-group>
       </span>
     </el-dialog>
-    <!-- el-popver popoverVisible为true为隐藏，一脸问号 -->
+    <el-popover
+      ref="statusPopover"
+      v-model="statusPopoverVisible"
+      placement="bottom"
+      width="200"
+      trigger="click"
+      @show="showPopoverHandle('statusPopoverVisible', 'HotPointTable')"
+    >
+      <ul class="status-container">
+        <li
+          v-for="(value, key) in HOTPOINT_STATUS"
+          :key="key"
+          class="status-item click-item"
+          @click="changeStatus(key)"
+        >
+          {{ value }}
+        </li>
+      </ul>
+    </el-popover>
     <el-popover
       ref="catPopover"
       v-model="catPopoverVisible"
       placement="bottom"
       width="200"
       trigger="click"
-      @show="showPopoverHandle('catPopoverVisible', 'articleTable')"
+      @show="showPopoverHandle('catPopoverVisible', 'HotPointTable')"
     >
       <el-select
         v-model="categorySeletionItem"
@@ -171,7 +182,7 @@
       </el-select>
       <el-button
         size="small"
-        @click="updateArticleCat"
+        @click="updateHotPointCat"
         style="width: calc(100% + 4px); border-bottom: none"
         >保存修改</el-button
       >
@@ -182,11 +193,11 @@
       placement="bottom"
       width="150"
       trigger="click"
-      @show="showPopoverHandle('recomPopoverVisible', 'articleTable')"
+      @show="showPopoverHandle('recomPopoverVisible', 'HotPointTable')"
     >
       <ul class="status-container">
         <li
-          v-for="(value, key) in ARTICLE_TYPE"
+          v-for="(value, key) in ARTICLE_HOTPOINT_TYPE"
           :key="key"
           class="status-item click-item"
           @click="changeType(key)"
@@ -199,14 +210,15 @@
 </template>
 <script>
 import {
-  deleteArticle,
+  deleteHotPoint,
+  updateHotPointCat,
   auditedAticle,
   rejectArticle,
-  getCategoriesList,
-  updateArticleCat,
-  updateArticleType,
+  getHotPointCategories,
+  updateHotPointType,
+  updateHotPointStatus,
 } from "@/api/api";
-import { APPROVE_STATUS, ARTICLE_TYPE } from "@/common/eum";
+import { HOTPOINT_STATUS, ARTICLE_HOTPOINT_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 export default {
   name: "Article",
@@ -214,68 +226,71 @@ export default {
   data() {
     return {
       searchData: {
-        title: null,
-        categoryName: null,
+        hotPointContent: null,
+        categoryId: null,
+        hotPointStatus: null,
         userName: null,
         createDate: null,
-        updateDate: null,
       },
       tableProps: {
+        showNum: true,
         selection: true,
         setting: {
-          //   url: "category/queryArticles",
+          url: "hotPoint/queryHotPoint",
         },
       },
       columns: [
         {
           prop: "hotPointContent",
-          label: "标题",
+          label: "沸点",
         },
-        { prop: "likeCount", label: "点赞数" },
         {
-          prop: "hotPointPictrue",
-          label: "封面图",
+          prop: "hotPointPictrues",
+          label: "沸点图片",
           render: (h, { row }) => {
-            if (row.hotPointPictrue) {
-              return h("img", {
+            if (row.hotPointPictrues) {
+              let url = row.hotPointPictrues[0];
+              return h("el-image", {
                 attrs: {
-                  class: "banner-img", // less可以使用 /deep/使样式生效
-                  src: row.hotPointPictrue,
+                  src: url,
+                  "preview-src-list": row.hotPointPictrues,
                 },
               });
+            } else {
+              return h("span", row.hotPointPictrues);
             }
           },
-        },
-        {
-          prop: "status",
-          label: "状态",
-          formatter: (row, columns, cellValue) => {
-            return cellValue;
-          },
-        },
-        {
-          prop: "categoryName",
-          label: "分类",
         },
         {
           prop: "userName",
           label: "创建人",
         },
         {
-          prop: "articleType",
-          label: "文章推荐",
+          prop: "categoryName",
+          label: "分类",
+        },
+        {
+          prop: "hotPointStatus",
+          label: "状态",
           formatter: (row, columns, cellValue) => {
-            return cellValue;
+            return HOTPOINT_STATUS[cellValue];
+          },
+        },
+        { prop: "likeCount", label: "点赞数" },
+        {
+          prop: "hotPointType",
+          label: "沸点推荐",
+          formatter: (row, columns, cellValue) => {
+            return ARTICLE_HOTPOINT_TYPE[cellValue];
           },
         },
         { prop: "createDate", label: "创建时间" },
-        { prop: "updateDate", label: "更新时间" },
         { prop: "rejectRemark", label: "驳回备注" },
       ],
       set_reject: {
         visible: false,
         data: {
-          articleIds: [],
+          hotPointIds: [],
           rejectRemark: null,
         },
       },
@@ -284,29 +299,30 @@ export default {
       categorySeletionItem: null,
       catPopoverVisible: false,
       recomPopoverVisible: false,
+      statusPopoverVisible: false,
       rows: [],
     };
   },
   created() {
-    this.getCategoriesList();
-    this.APPROVE_STATUS = APPROVE_STATUS;
-    this.ARTICLE_TYPE = ARTICLE_TYPE;
+    this.getHotPointCategories();
+    this.HOTPOINT_STATUS = HOTPOINT_STATUS;
+    this.ARTICLE_HOTPOINT_TYPE = ARTICLE_HOTPOINT_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
   },
   methods: {
     search() {
       this.tableProps.setting.params = this.searchData;
-      this.$refs.articleTable.searchTableData();
+      this.$refs.HotPointTable.searchTableData();
     },
     reset() {
       this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
       this.search();
     },
     async showRejectDailog() {
-      let rows = this.checkTableSelect("articleTable", "single");
+      let rows = this.checkTableSelect("HotPointTable", "single");
       if (rows) {
         this.set_reject.visible = true;
-        this.set_reject.data.articleIds = rows.map((x) => x.articleId);
+        this.set_reject.data.hotPointIds = rows.map((x) => x.hotPointId);
       }
     },
     async rejectOk() {
@@ -325,58 +341,75 @@ export default {
       this.set_reject.data.rejectRemark = null;
     },
     async auditedAticle() {
-      let rows = this.checkTableSelect("articleTable");
+      let rows = this.checkTableSelect("HotPointTable");
       if (!rows) return;
       let res = await auditedAticle({
-        articleIds: rows.map((x) => x.articleId),
+        hotPointIds: rows.map((x) => x.hotPointId),
       });
       if (res.code === 0) {
         this.$message.success(res.msg);
         this.search();
       }
     },
-    async deleteArticle() {
-      let rows = this.checkTableSelect("articleTable");
+    async deleteHotPoint() {
+      let rows = this.checkTableSelect("HotPointTable");
       if (!rows) return;
-      let res = await deleteArticle({
-        articleIds: rows.map((x) => x.articleId),
+      let res = await deleteHotPoint({
+        hotPointIds: rows.map((x) => x.hotPointId),
       });
-      if (res.code === 0) {
-        this.$message.success(res.msg);
-        this.search();
+      if (res.code !== 0) {
+        return this.$message.warning(res.msg);
       }
+      this.search();
+      this.$message.success(res.msg);
     },
-    async updateArticleCat() {
-      let res = await updateArticleCat({
-        articleIds: this.rows.map((x) => x.articleId),
+    async updateHotPointCat() {
+      let res = await updateHotPointCat({
+        hotPointIds: this.rows.map((x) => x.hotPointId),
         categoryId: this.categorySeletionItem,
       });
-      if (res.code === 0) {
-        this.$message.success(res.msg);
-        this.catPopoverVisible = false;
-        this.search();
+      if (res.code !== 0) {
+        return this.$message.warning(res.msg);
       }
-    },
-    async changeType(articleType) {
-      let params = {
-        articleType: articleType,
-        articleIds: this.rows.map((x) => x.articleId),
-      };
-      let res = await updateArticleType(params);
+      this.search();
       this.$message.success(res.msg);
-      if (res.code === 0) {
-        this.recomPopoverVisible = false;
-        this.search();
-      }
+      this.catPopoverVisible = false;
     },
+    async changeType(hotPointType) {
+      let params = {
+        hotPointType: hotPointType,
+        hotPointIds: this.rows.map((x) => x.hotPointId),
+      };
+      let res = await updateHotPointType(params);
+      if (res.code !== 0) {
+        return this.$message.warning(res.msg);
+      }
+      this.search();
+      this.$message.success(res.msg);
+      this.recomPopoverVisible = false;
+    },
+    async changeStatus(hotPointStatus) {
+      let params = {
+        hotPointStatus: hotPointStatus,
+        hotPointIds: this.rows.map((x) => x.hotPointId),
+      };
+      let res = await updateHotPointStatus(params);
+      if (res.code !== 0) {
+        return this.$message.warning(res.msg);
+      }
+      this.search();
+      this.$message.success(res.msg);
+      this.statusPopoverVisible = false;
+    },
+
     changeTemplate() {},
-    async getCategoriesList() {
-      let res = await getCategoriesList();
+    async getHotPointCategories() {
+      let res = await getHotPointCategories();
       this.catergorySeletion = res.data.dataList;
     },
     // showPopoverHandle(popoverVisible) {
     //   this[popoverVisible] = false; //popover 默认显示值取反。判断是否勾选时，要先传false隐藏
-    //   let rows = this.checkTableSelect("articleTable");
+    //   let rows = this.checkTableSelect("HotPointTable");
     //   if (!rows) return;
     //   this[popoverVisible] = true;
     //   this.rows = rows;
