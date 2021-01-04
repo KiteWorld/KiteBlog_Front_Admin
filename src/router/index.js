@@ -43,6 +43,11 @@ const routes = [{
         path: '/hotPoint',
         name: 'HotPoint',
         component: () => import('../views/HotPoint')
+      },
+      {
+        path: '/editor',
+        name: 'Editor',
+        component: () => import('../views/Editor')
       }
     ]
   },

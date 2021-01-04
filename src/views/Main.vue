@@ -23,10 +23,6 @@
               <el-menu-item index="article">文章列表</el-menu-item>
               <el-menu-item index="articleconfig">文章相关配置</el-menu-item>
             </el-submenu>
-            <!-- <el-menu-item index="article">
-              <i class="el-icon-menu"></i>
-              <span slot="title">文章管理</span>
-            </el-menu-item> -->
             <el-menu-item index="User">
               <i class="el-icon-document"></i>
               <span slot="title">用户管理</span>
@@ -42,6 +38,10 @@
             <el-menu-item index="hotPoint">
               <i class="el-icon-document"></i>
               <span slot="title">沸点管理</span>
+            </el-menu-item>
+            <el-menu-item index="editor">
+              <i class="el-icon-document"></i>
+              <span slot="title">编辑器</span>
             </el-menu-item>
           </el-menu>
         </el-scrollbar>

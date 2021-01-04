@@ -243,6 +243,8 @@ export default {
         {
           prop: "hotPointContent",
           label: "沸点",
+          //   "min-width": 200,
+          //   "show-overflow-tooltip": true,
         },
         {
           prop: "hotPointPictrues",
@@ -401,7 +403,6 @@ export default {
       this.$message.success(res.msg);
       this.statusPopoverVisible = false;
     },
-
     changeTemplate() {},
     async getHotPointCategories() {
       let res = await getHotPointCategories();

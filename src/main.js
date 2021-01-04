@@ -11,6 +11,7 @@ import SearchInput from "@/components/SearchInput"
 import Table from "@/components/Table"
 
 
+
 axios.defaults.baseURL = "http://localhost:1874"
 
 Vue.config.productionTip = false

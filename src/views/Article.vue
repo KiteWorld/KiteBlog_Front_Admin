@@ -214,6 +214,8 @@ import {
 } from "@/api/api";
 import { APPROVE_STATUS, ARTICLE_HOTPOINT_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
+import Cookies from "js-cookie";
+
 export default {
   name: "Article",
   mixins: [checkTableSelect, showPopoverHandle],
@@ -246,9 +248,33 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.$message.success(
-                      "跳转到文章详细页面和前端共用(后面开发toC时补上)"
-                    );
+                    let isEditArticle = row.userId === Cookies.get("userId");
+                    let toEdit = () => {
+                      let routeUrl = this.$router.resolve({
+                        path: "/editor",
+                        query: { id: row.articleId, type: "article" },
+                      });
+                      window.open(routeUrl.href, "_blank");
+                    };
+                    if (!isEditArticle) {
+                      this.$confirm(
+                        "你不是文章的创建人，确认对文章进行编辑?",
+                        "提示",
+                        {
+                          confirmButtonText: "确定",
+                          cancelButtonText: "取消",
+                          type: "warning",
+                        }
+                      )
+                        .then(() => {
+                          toEdit();
+                        })
+                        .catch(() => {
+                          return;
+                        });
+                    } else {
+                      toEdit();
+                    }
                   },
                 },
               },

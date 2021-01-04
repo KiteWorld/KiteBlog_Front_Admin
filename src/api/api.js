@@ -129,6 +129,14 @@ export function queryArticles(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function queryArticleById(params) {
+	const url = `article/queryArticleById`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function deleteArticle(params) {
 	const url = `article/deleteArticle`;
 	return axios.post(url, params).then((res) => {
@@ -159,9 +167,21 @@ export function updateArticleType(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function saveArticle(params) {
+	const url = `article/saveArticle`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 // ------------沸点--------------
 export function queryHotPoint(params) {
 	const url = `hotPoint/queryHotPoint`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function queryHotPointById(params) {
+	const url = `hotPoint/queryHotPointById`;
 	return axios.post(url, params).then((res) => {
 		return Promise.resolve(res.data)
 	})
@@ -186,6 +206,12 @@ export function updateHotPointType(params) {
 }
 export function updateHotPointStatus(params) {
 	const url = `hotPoint/updateHotPointStatus`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function saveHotPoint(params) {
+	const url = `hotPoint/saveHotPoint`;
 	return axios.post(url, params).then((res) => {
 		return Promise.resolve(res.data)
 	})
