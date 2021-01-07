@@ -176,13 +176,17 @@ export function saveArticle(params) {
 // ------------沸点--------------
 export function queryHotPoint(params) {
 	const url = `hotPoint/queryHotPoint`;
-	return axios.post(url, params).then((res) => {
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
 		return Promise.resolve(res.data)
 	})
 }
 export function queryHotPointById(params) {
 	const url = `hotPoint/queryHotPointById`;
-	return axios.post(url, params).then((res) => {
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
 		return Promise.resolve(res.data)
 	})
 }

@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 export const checkTableSelect = {
 	data() {
 		return {}
@@ -34,5 +35,43 @@ export const showPopoverHandle = {
 			this[popoverVisible] = true;
 			this.rows = rows;
 		},
+	}
+}
+
+export const toEdit = {
+	data() {
+		return {
+			rows: []
+		}
+	},
+	methods: {
+		toEdit(userId, id, type, text) {
+			let isEditArticle = userId == Cookies.get("userId");
+			let toRouter = () => {
+				let routeUrl = this.$router.resolve({
+					path: "/editor",
+					query: {
+						id,
+						type
+					},
+				});
+				window.open(routeUrl.href, "_blank");
+			};
+			if (!isEditArticle) {
+				this.$confirm(`你不是改${text}的创建人，确定对该${text}进行编辑?`, "提示", {
+						confirmButtonText: "确定",
+						cancelButtonText: "取消",
+						type: "warning",
+					})
+					.then(() => {
+						toRouter();
+					})
+					.catch(() => {
+						return;
+					});
+			} else {
+				toRouter()
+			}
+		}
 	}
 }

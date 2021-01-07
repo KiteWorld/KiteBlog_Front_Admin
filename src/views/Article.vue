@@ -19,6 +19,7 @@
           <el-button plain size="small" v-popover:recommendPopover
             >推荐设置</el-button
           >
+          <el-button plain size="small" @click="addArticle">新增文章</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -213,12 +214,10 @@ import {
   getCategoriesList,
 } from "@/api/api";
 import { APPROVE_STATUS, ARTICLE_HOTPOINT_TYPE } from "@/common/eum";
-import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
-import Cookies from "js-cookie";
-
+import { checkTableSelect, showPopoverHandle, toEdit } from "@/common/mixin";
 export default {
   name: "Article",
-  mixins: [checkTableSelect, showPopoverHandle],
+  mixins: [checkTableSelect, showPopoverHandle, toEdit],
   data() {
     return {
       searchData: {
@@ -248,33 +247,8 @@ export default {
                 },
                 on: {
                   click: () => {
-                    let isEditArticle = row.userId === Cookies.get("userId");
-                    let toEdit = () => {
-                      let routeUrl = this.$router.resolve({
-                        path: "/editor",
-                        query: { id: row.articleId, type: "article" },
-                      });
-                      window.open(routeUrl.href, "_blank");
-                    };
-                    if (!isEditArticle) {
-                      this.$confirm(
-                        "你不是文章的创建人，确认对文章进行编辑?",
-                        "提示",
-                        {
-                          confirmButtonText: "确定",
-                          cancelButtonText: "取消",
-                          type: "warning",
-                        }
-                      )
-                        .then(() => {
-                          toEdit();
-                        })
-                        .catch(() => {
-                          return;
-                        });
-                    } else {
-                      toEdit();
-                    }
+                    console.log(row.userId)
+                    this.toEdit(row.userId, row.articleId, "article", "文章");
                   },
                 },
               },
@@ -420,6 +394,9 @@ export default {
         this.recomPopoverVisible = false;
         this.search();
       }
+    },
+    addArticle() {
+      this.$router.push({ name: "Editor", query: { type: "article" } });
     },
     changeTemplate() {},
   },

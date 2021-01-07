@@ -14,8 +14,10 @@
     "element-ui": "^2.14.1",
     "js-cookie": "^2.2.1",
     "normalize.css": "^8.0.1",
+    "simplemde-theme-base": "^0.2.1",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "vue-simplemde": "^1.1.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

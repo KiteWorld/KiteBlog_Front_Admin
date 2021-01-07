@@ -120,7 +120,6 @@
         </el-select>
         <el-button size="small">使用模板</el-button>
       </div>
-
       <el-input
         type="textarea"
         placeholder="请输入内容"
@@ -219,10 +218,10 @@ import {
   updateHotPointStatus,
 } from "@/api/api";
 import { HOTPOINT_STATUS, ARTICLE_HOTPOINT_TYPE } from "@/common/eum";
-import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
+import { checkTableSelect, showPopoverHandle, toEdit } from "@/common/mixin";
 export default {
   name: "Article",
-  mixins: [checkTableSelect, showPopoverHandle],
+  mixins: [checkTableSelect, showPopoverHandle, toEdit],
   data() {
     return {
       searchData: {
@@ -243,8 +242,23 @@ export default {
         {
           prop: "hotPointContent",
           label: "沸点",
-          //   "min-width": 200,
-          //   "show-overflow-tooltip": true,
+          render: (h, { row }) => {
+            return h(
+              "a",
+              {
+                style: {
+                  color: "#409EFF",
+                  cursor: "pointer",
+                },
+                on: {
+                  click: () => {
+                    this.toEdit(row.userId, row.hotPointId, "hotpoint", "沸点");
+                  },
+                },
+              },
+              row.hotPointContent
+            );
+          },
         },
         {
           prop: "hotPointPictrues",
@@ -408,13 +422,6 @@ export default {
       let res = await getHotPointCategories();
       this.catergorySeletion = res.data.dataList;
     },
-    // showPopoverHandle(popoverVisible) {
-    //   this[popoverVisible] = false; //popover 默认显示值取反。判断是否勾选时，要先传false隐藏
-    //   let rows = this.checkTableSelect("HotPointTable");
-    //   if (!rows) return;
-    //   this[popoverVisible] = true;
-    //   this.rows = rows;
-    // },
   },
 };
 </script>
