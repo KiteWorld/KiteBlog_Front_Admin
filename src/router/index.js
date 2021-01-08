@@ -30,6 +30,11 @@ const routes = [{
         component: () => import('../views/HotPointCategory')
       },
       {
+        path: '/templateCategory',
+        name: 'TemplateCategory',
+        component: () => import('../views/TemplateCategory')
+      },
+      {
         path: '/article',
         name: 'Article',
         component: () => import('../views/Article')

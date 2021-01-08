@@ -40,3 +40,21 @@ export const ARTICLE_HOTPOINT_TYPE = {
 	"hot": "热门",
 	"top": "置顶"
 }
+export const ARTICLE_INIT_PARAMS = {
+	title: null,
+	content: null,
+	markdown: null,
+	categoryId: null,
+	userId: null,
+	type: null,
+	status: null,
+	id: null,
+}
+export const HOTPOINT_INIT_PARAMS = {
+	hotPointContent: null,
+	hotPointType: null,
+	hotPointStatus: null,
+	categoryId: null,
+	userId: null,
+	hotPointId: null,
+}

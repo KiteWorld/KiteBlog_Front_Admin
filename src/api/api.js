@@ -73,12 +73,6 @@ export function updateCategory(params) {
 		return Promise.resolve(res.data)
 	})
 }
-export function updateHotPointCategory(params) {
-	const url = `category/updateHotPointCategory`;
-	return axios.post(url, params).then((res) => {
-		return Promise.resolve(res.data)
-	})
-}
 export function deleteCategory(params) {
 	const url = `category/deleteCategory`;
 	return axios.post(url, params).then((res) => {
@@ -88,6 +82,12 @@ export function deleteCategory(params) {
 
 export function insertHotPointCategories(params) {
 	const url = `category/insertHotPointCategories`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function insertTemplateCategories(params) {
+	const url = `category/insertTemplateCategories`;
 	return axios.post(url, params).then((res) => {
 		return Promise.resolve(res.data)
 	})
@@ -107,6 +107,12 @@ export function deleteHotPointCategory(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function updateHotPointCategory(params) {
+	const url = `category/updateHotPointCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function transferHotPointCategory(params) {
 	const url = `category/transferHotPointCategory`;
 	return axios.post(url, params).then((res) => {
@@ -119,6 +125,29 @@ export function transferCategory(params) {
 		return Promise.resolve(res.data)
 	})
 }
+export function getTemplateCategories(params) {
+	const url = `category/getTemplateCategories`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function deleteTemplateCategory(params) {
+	const url = `category/deleteTemplateCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function updateTemplateCategory(params) {
+	const url = `category/updateTemplateCategory`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
+
+
 // ---------文章---------
 
 export function queryArticles(params) {

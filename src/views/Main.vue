@@ -34,6 +34,7 @@
               </template>
               <el-menu-item index="ArticleCategory">文章分类</el-menu-item>
               <el-menu-item index="HotPointcategory">沸点分类</el-menu-item>
+              <el-menu-item index="TemplateCategory">模板分类</el-menu-item>
             </el-submenu>
             <el-menu-item index="hotPoint">
               <i class="el-icon-document"></i>

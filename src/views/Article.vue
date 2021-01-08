@@ -317,7 +317,7 @@ export default {
     this.APPROVE_STATUS = APPROVE_STATUS;
     this.ARTICLE_HOTPOINT_TYPE = ARTICLE_HOTPOINT_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
-    this.catergorySeletion = (await getCategoriesList()).data.dataList;
+    this.catergorySeletion = (await getCategoriesList({categoryType:"article"})).data.dataList;
   },
   methods: {
     search() {

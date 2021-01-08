@@ -124,7 +124,7 @@
           style="margin: 10px"
         >
           <el-option
-            v-for="item in catergorySeletion"
+            v-for="item in categorySeletion"
             :key="item.categoryId"
             :label="item.categoryName"
             :value="item.categoryId"
@@ -165,7 +165,7 @@ export default {
         label: "categoryName",
       },
       filterText: null,
-      catergorySeletion: [],
+      categorySeletion: [],
       categorySeletionItem: null,
       catPopoverVisible: false,
       nodeKeys: [],
@@ -173,7 +173,9 @@ export default {
   },
   async created() {
     this.getCategories();
-    this.catergorySeletion = (await getCategoriesList()).data.dataList;
+    this.categorySeletion = (
+      await getCategoriesList({ categoryType: "article" })
+    ).data.dataList;
   },
   beforeMount() {},
   mounted() {},

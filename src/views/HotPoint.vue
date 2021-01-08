@@ -16,6 +16,9 @@
           <el-button plain size="small" v-popover:recommendPopover
             >推荐设置</el-button
           >
+          <el-button plain size="small" @click="addHotPoint"
+            >新增沸点</el-button
+          >
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -213,7 +216,7 @@ import {
   updateHotPointCat,
   auditedAticle,
   rejectArticle,
-  getHotPointCategories,
+  getCategoriesList,
   updateHotPointType,
   updateHotPointStatus,
 } from "@/api/api";
@@ -240,12 +243,15 @@ export default {
       },
       columns: [
         {
-          prop: "hotPointContent",
+          prop: "hotPointId",
           label: "沸点",
           render: (h, { row }) => {
             return h(
               "a",
               {
+                // domProps: {
+                //   innerHTML: row.hotPointContent,
+                // },
                 style: {
                   color: "#409EFF",
                   cursor: "pointer",
@@ -256,7 +262,7 @@ export default {
                   },
                 },
               },
-              row.hotPointContent
+              row.hotPointId
             );
           },
         },
@@ -320,7 +326,7 @@ export default {
     };
   },
   created() {
-    this.getHotPointCategories();
+    this.getCategoriesList();
     this.HOTPOINT_STATUS = HOTPOINT_STATUS;
     this.ARTICLE_HOTPOINT_TYPE = ARTICLE_HOTPOINT_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
@@ -418,9 +424,12 @@ export default {
       this.statusPopoverVisible = false;
     },
     changeTemplate() {},
-    async getHotPointCategories() {
-      let res = await getHotPointCategories();
+    async getCategoriesList() {
+      let res = await getCategoriesList({ categoryType: "hotpoint" });
       this.catergorySeletion = res.data.dataList;
+    },
+    addHotPoint() {
+      this.$router.push({ name: "Editor", query: { type: "hotpoint" } });
     },
   },
 };

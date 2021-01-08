@@ -5,10 +5,10 @@
         <el-button-group style="margin-bottom: 5px">
           <el-button plain size="small" @click="addCat">添加分类</el-button>
           <el-button plain size="small" v-popover:catPopover
-            >分类沸点迁移</el-button
+            >分类模板迁移</el-button
           >
-          <el-button plain size="small" @click="getHotPointCategories"
-            >刷新排序</el-button
+          <el-button plain size="small" @click="getTemplateCategories"
+            >刷新</el-button
           >
         </el-button-group>
       </el-col>
@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
     <Table
-      ref="hotPointCategoryTable"
+      ref="templateCategoryTable"
       :tableProps="tableProps"
       :columns="columns"
       :dataList="dataList"
@@ -39,7 +39,7 @@
       @show="
         showPopoverHandle(
           'catPopoverVisible',
-          'hotPointCategoryTable',
+          'templateCategoryTable',
           'single'
         )
       "
@@ -62,67 +62,26 @@
       </el-select>
       <el-button
         size="small"
-        @click="transferHotPoint"
+        @click="transferTemplate"
         style="width: calc(100% + 4px); border-bottom: none"
         >确认迁移</el-button
       >
     </el-popover>
-    <!-- <el-dialog
-      title="添加分类"
-      :visible.sync="set_add.visible"
-      width="35%"
-      @close="closeAddDialog"
-    >
-      <el-form
-        :model="set_add.data"
-        ref="addCatForm"
-        label-width="120px"
-        size="small"
-      >
-        <el-form-item label="类名：">
-          <el-input
-            v-model="set_add.data.categoryName"
-            size="small"
-            style="width: 100%"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="是否显示：">
-          <el-switch
-            v-model="set_add.data.categoryStatus"
-            :active-value="true"
-            :inactive-value="false"
-          >
-          </el-switch>
-        </el-form-item>
-        <el-form-item label="分类显示顺序：">
-          <el-input-number
-            v-model="set_add.data.categoryOrder"
-            size="small"
-            :min="1"
-          ></el-input-number>
-        </el-form-item>
-      </el-form>
-
-      <span slot="footer">
-        <el-button @click="set_add.visible = false">取消</el-button>
-        <el-button type="primary" @click="addCatOk">确认</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import {
-  insertHotPointCategories,
-  getHotPointCategories,
-  updateHotPointCategory,
-  deleteHotPointCategory,
-  transferHotPointCategory,
+  insertTemplateCategories,
+  getTemplateCategories,
+  updateTemplateCategory,
+  deleteTemplateCategory,
+  transferCategory,
   getCategoriesList,
 } from "@/api/api";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 export default {
-  name: "HotPointCategory",
+  name: "TemplateCategory",
   mixins: [checkTableSelect, showPopoverHandle],
   data() {
     return {
@@ -208,8 +167,8 @@ export default {
           },
         },
         {
-          prop: "hotPointCount",
-          label: "沸点数量",
+          prop: "templateCount",
+          label: "模板数量",
         },
         {
           prop: "do",
@@ -225,7 +184,7 @@ export default {
                   click: async () => {
                     let res;
                     if (row.categoryId) {
-                      res = await deleteHotPointCategory({
+                      res = await deleteTemplateCategory({
                         categoryId: row.categoryId,
                       });
                       if (res.code !== 0) {
@@ -271,9 +230,9 @@ export default {
                     }
                     let res;
                     if (row.categoryId) {
-                      res = await updateHotPointCategory(row);
+                      res = await updateTemplateCategory(row);
                     } else {
-                      res = await insertHotPointCategories({
+                      res = await insertTemplateCategories({
                         insertCats: [row],
                       });
                       row.categoryId = res.data.categoryId;
@@ -298,9 +257,9 @@ export default {
   },
   async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
-    this.getHotPointCategories();
+    this.getTemplateCategories();
     this.catergorySeletion = (
-      await getCategoriesList({ categoryType: "hotpoint" })
+      await getCategoriesList({ categoryType: "template" })
     ).data.dataList;
   },
   methods: {
@@ -324,17 +283,17 @@ export default {
         categoryId: null,
         categoryStatus: true,
         categoryOrder: 1,
-        hotPointCount: 0,
+        templateCount: 0,
       });
     },
-    async transferHotPoint() {
+    async transferTemplate() {
       const loading = this.$loading({
         lock: true,
         text: "数据迁移中...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      let res = await transferHotPointCategory({
+      let res = await transferCategory({
         categoryId: this.rows[0].categoryId,
         afterCategoryId: this.categorySeletionItem,
       });
@@ -342,36 +301,12 @@ export default {
       if (res.code !== 0) {
         return this.$message.warning(res.msg);
       }
-      this.getHotPointCategories();
+      this.getTemplateCategories();
       this.catPopoverVisible = false;
       this.$message.success(res.msg);
     },
-    //使用 el-dialog 方式添加分类
-    // addCat() {
-    //   this.set_add.visible = true;
-    //   this.set_add.data.categoryName = null;
-    //   this.set_add.data.categoryOrder = 1;
-    //   this.set_add.data.categoryStatus = true;
-    // },
-    // async addCatOk() {
-    //   if (!this.set_add.data.categoryName) {
-    //     return this.$message.warning("类名不为空！");
-    //   }
-    //   let res = await insertHotPointCategories({
-    //     insertCats: [this.set_add.data],
-    //   });
-    //   if (res.code !== 0) {
-    //     return this.$message.warning(res.msg);
-    //   }
-    //   this.set_add.visible = false;
-    //   this.$message.success(res.msg);
-    //   this.search();
-    // },
-    // closeAddDialog() {
-    //   this.set_add.visible = false;
-    // },
-    async getHotPointCategories() {
-      let res = await getHotPointCategories();
+    async getTemplateCategories() {
+      let res = await getTemplateCategories();
       this.dataList = res.data.dataList;
       this.dataListBackUp = JSON.parse(JSON.stringify(this.dataList));
     },
