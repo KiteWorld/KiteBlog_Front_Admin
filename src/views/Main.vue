@@ -5,45 +5,15 @@
         <el-scrollbar style="height: 100%">
           <el-menu
             class="left-menu"
-            default-active="dashboard"
-            @open="handleOpen"
-            @close="handleClose"
+            default-active="/dashboard"
             background-color="#fff"
-            router
+            v-if="routerList.length > 0"
           >
-            <el-menu-item index="dashboard">
-              <i class="el-icon-setting"></i>
-              <span slot="title">Dashboard</span>
-            </el-menu-item>
-            <el-submenu index="article">
-              <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>文章管理</span>
-              </template>
-              <el-menu-item index="article">文章列表</el-menu-item>
-              <el-menu-item index="articleconfig">文章相关配置</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="User">
-              <i class="el-icon-document"></i>
-              <span slot="title">用户管理</span>
-            </el-menu-item>
-            <el-submenu index="ArticleCategory">
-              <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>分类管理</span>
-              </template>
-              <el-menu-item index="ArticleCategory">文章分类</el-menu-item>
-              <el-menu-item index="HotPointcategory">沸点分类</el-menu-item>
-              <el-menu-item index="TemplateCategory">模板分类</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="hotPoint">
-              <i class="el-icon-document"></i>
-              <span slot="title">沸点管理</span>
-            </el-menu-item>
-            <el-menu-item index="editor">
-              <i class="el-icon-document"></i>
-              <span slot="title">编辑器</span>
-            </el-menu-item>
+            <sidemenu-Item
+              v-for="(item, index) in routerList"
+              :key="index"
+              :item="item"
+            ></sidemenu-Item>
           </el-menu>
         </el-scrollbar>
       </div>
@@ -61,7 +31,6 @@
               v-show="!isCollapse"
             ></i>
           </div>
-          <div class="history-record-tags"></div>
           <el-popover
             placement="bottom"
             trigger="click"
@@ -71,30 +40,47 @@
             <span slot="reference" class="username">{{ userName }}</span>
           </el-popover>
         </div>
-        <router-view />
+        <tags-view />
+        <keep-alive>
+          <router-view />
+        </keep-alive>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
 import Cookies from "js-cookie";
+import TagsView from "@/components/TagsView";
+import SidemenuItem from "@/components/SidemenuItem";
+
 export default {
   name: "Main",
-  components: {},
+  components: {
+    TagsView,
+    SidemenuItem,
+  },
   data() {
     return {
       userName: null,
       isCollapse: true,
     };
   },
-  created() {
+  async created() {
     this.userName = Cookies.get("name");
   },
+  computed: {
+    visitedViews() {
+      return this.$store.state.tagsView.visitedViews;
+    },
+    routerList() {
+      return this.$store.state.permission.routerList;
+    },
+  },
   methods: {
-    handleOpen() {},
-    handleClose() {},
+    // toPath(view) {
+    //   this.$store.dispatch("tagsView/addVisitedView", view);
+    // },
     logout() {
       Cookies.remove("name");
       Cookies.remove("token");
@@ -133,6 +119,7 @@ export default {
       .header {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         height: 50px;
         box-shadow: 0 0 10px rgb(211, 211, 211);
         .collapse-icon-container {
@@ -140,12 +127,7 @@ export default {
           font-size: 22px;
           margin-left: 10px;
         }
-        .history-record-tags {
-          flex: 1;
-          overflow: hidden;
-          border-right: 1px solid #eee;
-          height: 50px;
-        }
+
         .username {
           font-size: 12px;
           padding: 10px;

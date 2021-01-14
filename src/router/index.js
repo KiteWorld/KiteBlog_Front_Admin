@@ -1,84 +1,87 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Main from '../views/Main.vue'
 import Cookies from 'js-cookie'
+import store from '@/store'
+import {
+  queryRouter
+} from "@/api/api";
+import Main from '@/views/Main'
 
 Vue.use(VueRouter)
 
 const routes = [{
-    path: '/',
-    name: 'Main',
-    component: Main,
-    children: [{
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: () => import('../views/Dashboard')
-      },
-      {
-        path: '/user',
-        name: 'User',
-        component: () => import('../views/User')
-      },
-      {
-        path: '/articleCategory',
-        name: 'ArticleCategory',
-        component: () => import('../views/ArticleCategory')
-      },
-      {
-        path: '/hotPointCategory',
-        name: 'HotPointCategory',
-        component: () => import('../views/HotPointCategory')
-      },
-      {
-        path: '/templateCategory',
-        name: 'TemplateCategory',
-        component: () => import('../views/TemplateCategory')
-      },
-      {
-        path: '/article',
-        name: 'Article',
-        component: () => import('../views/Article')
-      },
-      {
-        path: '/articleconfig',
-        name: 'ArticleConfig',
-        component: () => import('../views/ArticleConfig')
-      },
-      {
-        path: '/hotPoint',
-        name: 'HotPoint',
-        component: () => import('../views/HotPoint')
-      },
-      {
-        path: '/editor',
-        name: 'Editor',
-        component: () => import('../views/Editor')
-      }
-    ]
-  },
-  {
-    path: '/adminLogin',
-    name: 'Login',
-    component: () => import('../views/Login')
-  }
-]
-
+  path: '/adminLogin',
+  name: 'Login',
+  component: () => import('../views/Login')
+}]
 
 const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.name == "Login" && Cookies.get('token')) {
-    next({
-      name: 'Main'
-    })
-  } else if (to.name != "Login" && !Cookies.get('token')) {
-    next({
-      name: "Login"
-    })
+//存放处理后的路由
+const routerListResolve = []
+
+//整理路由数据
+const getRoutes = (routerList) => {
+  routerList.forEach(x => {
+    if (x.meta.level == 1) {
+      x.path = "/" + x.path
+      if (x.component !== "Main") {
+        const router = {
+          path: '/',
+          name: 'Main_' + x.name,
+          component: Main,
+          children: [x]
+        }
+        if (x.name == "Dashboard") router.redirect = '/dashboard'
+        if (x.meta.isAffix) store.dispatch("tagsView/addVisitedView", x);
+        routerListResolve.push(router)
+      } else {
+        routerListResolve.push(x)
+      }
+    }
+    //直接写成 x.component = () => import(`@/views/${x.component}`) webpack 无法解析
+    const component = x.component;
+    x.component = () => import(`@/views/${component}`)
+    if (x.children.length > 0) {
+      getRoutes(x.children)
+    }
+  })
+}
+
+router.beforeEach(async (to, from, next) => {
+  console.log(Cookies.get('token'))
+  if (Cookies.get('token')) {
+    if (to.path === '/adminLogin') {
+      next({
+        path: '/'
+      })
+    } else {
+      if (store.state.permission.routerList.length !== 0) {
+        next()
+      } else {
+        let routerList = (await queryRouter()).data.dataList
+        store.dispatch('permission/addRouterList', routerList)
+        getRoutes(routerList)
+        router.addRoutes(routerListResolve)
+        next({
+          ...to,
+          replace: true
+        })
+
+      }
+    }
+  } else {
+    //避免死循环
+    if (to.path === '/adminLogin') {
+      next()
+    } else {
+      next({
+        name: "Login"
+      })
+    }
   }
-  next()
 })
 
 export default router

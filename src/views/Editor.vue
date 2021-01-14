@@ -9,7 +9,7 @@
           >沸点</el-radio
         >
         <el-radio label="template" :disabled="id && type != 'template'"
-          >官方消息模板</el-radio
+          >官方模板</el-radio
         >
       </el-radio-group>
       <el-select
@@ -25,6 +25,24 @@
           :key="item.categoryId"
           :label="item.categoryName"
           :value="item.categoryId"
+        >
+        </el-option>
+      </el-select>
+      <el-select
+        v-model="recommendType"
+        placeholder="选择推荐分类"
+        clearable
+        filterable
+        size="small"
+        style="margin-left: 5px"
+        v-show="type !== 'template'"
+      >
+        <el-option
+          v-for="(value, key) in ARTICLE_RECOMMEND_TYPE"
+          :key="key"
+          :label="value"
+          :value="key"
+          style="text-align: center"
         >
         </el-option>
       </el-select>
@@ -119,6 +137,7 @@ import {
   saveHotPoint,
   saveArticle,
 } from "@/api/api";
+import { ARTICLE_RECOMMEND_TYPE } from "@/common/eum";
 import Cookies from "js-cookie";
 export default {
   name: "Editor",
@@ -157,6 +176,7 @@ export default {
         articleId: null,
       },
       categoryId: null,
+      recommendType: null,
       type: "article",
       typeText: "文章",
       id: null,
@@ -174,6 +194,7 @@ export default {
     },
   },
   async created() {
+    this.ARTICLE_RECOMMEND_TYPE = ARTICLE_RECOMMEND_TYPE;
     this.articleInit = JSON.parse(JSON.stringify(this.article));
     this.templateInit = JSON.parse(JSON.stringify(this.template));
     this.hotPointInit = JSON.parse(JSON.stringify(this.hotPoint));
@@ -198,6 +219,7 @@ export default {
   methods: {
     async changeContent() {
       this.categoryId = null;
+      this.recommendType = null;
       this.getCategoriesList();
     },
     async saveContent() {
@@ -208,10 +230,14 @@ export default {
           break;
         case "hotpoint":
           this.hotPoint.categoryId = this.categoryId;
+          this.hotPoint.hotPointType = this.recommendType;
+          this.hotPoint.userId = Cookies.get("userId");
           if (!this.hotPoint.hotPointContent)
             return this.$message.warning("内容不能为空");
           if (!this.hotPoint.categoryId)
             return this.$message.warning("请选择分类");
+          if (!this.hotPoint.hotPointType)
+            return this.$message.warning("请选择推荐分类");
           res = await saveHotPoint(this.hotPoint);
           this.hotPoint.hotPointId = this.id = res.data
             ? res.data.hotPointId
@@ -223,6 +249,7 @@ export default {
         default:
           break;
       }
+      if (!res) return;
       if (res.code !== 0) {
         return this.$message.error(res.msg);
       }
@@ -235,21 +262,36 @@ export default {
           ? "文章"
           : this.type === "hotpoint"
           ? "沸点"
-          : "官方消息模板";
+          : "模板";
       this.categorySeletion = (
         await getCategoriesList({ categoryType: this.type })
       ).data.dataList;
     },
     async saveContentType(type) {
+      let res = null;
       this[type].content = this[type].markdown
         ? this.$refs[type + "Editor"].simplemde.markdown(this[type].markdown)
         : null;
       this[type].categoryId = this.categoryId;
-      if (!this[type].title) return this.$message.warning("请输入标题");
-      if (!this[type].markdown) return this.$message.warning("内容不能为空");
-      if (!this[type].categoryId) return this.$message.warning("请选择分类");
+      this[type].type = type !== "template" ? this.recommendType : null;
+      if (!this[type].title) {
+        this.$message.warning("请输入标题");
+        return res;
+      }
+      if (!this[type].markdown) {
+        this.$message.warning("内容不能为空");
+        return res;
+      }
+      if (!this[type].categoryId) {
+        this.$message.warning("请选择分类");
+        return res;
+      }
+      if (!this[type].type && type !== "template") {
+        this.$message.warning("请选择推荐分类");
+        return res;
+      }
       this[type].userId = Cookies.get("userId");
-      let res = await saveArticle(this[type]);
+      res = await saveArticle(this[type]);
       this[type].articleId = this.id = res.data ? res.data.articleId : null;
       return res;
     },

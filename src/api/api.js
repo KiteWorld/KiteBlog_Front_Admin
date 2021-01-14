@@ -6,6 +6,16 @@ export function adminLogin(params) {
 		return Promise.resolve(res.data)
 	})
 }
+
+export function queryRouter(params) {
+	const url = `router/queryRouter`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
 export function getUsers(params) {
 	const url = `users/queryUsers`;
 	return axios.get(url, {

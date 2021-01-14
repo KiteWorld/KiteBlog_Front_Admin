@@ -17,7 +17,8 @@
     "simplemde-theme-base": "^0.2.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
-    "vue-simplemde": "^1.1.2"
+    "vue-simplemde": "^1.1.2",
+    "vuex": "^3.6.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -43,7 +44,10 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-debugger": "off",
+      "no-console": "off"
+    }
   },
   "browserslist": [
     "> 1%",

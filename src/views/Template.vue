@@ -3,12 +3,6 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="auditedAticle()"
-            >审核</el-button
-          >
-          <el-button plain size="small" @click="showRejectDailog()"
-            >驳回</el-button
-          >
           <el-button plain size="small" @click="deleteArticle()"
             >删除</el-button
           >
@@ -16,10 +10,9 @@
             >修改分类</el-button
           >
 
-          <el-button plain size="small" v-popover:recommendPopover
-            >推荐设置</el-button
+          <el-button plain size="small" @click="addTemplate"
+            >新增模板</el-button
           >
-          <el-button plain size="small" @click="addArticle">新增文章</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -27,7 +20,7 @@
           <el-input
             slot="main"
             v-model="searchData.title"
-            placeholder="文章标题"
+            placeholder="模板标题"
             size="small"
             clearable
           ></el-input>
@@ -105,60 +98,17 @@
       </el-col>
     </el-row>
     <Table
-      ref="articleTable"
+      ref="templateTable"
       :tableProps="tableProps"
       :columns="columns"
     ></Table>
-    <el-dialog
-      title="填写驳回信息"
-      :visible.sync="set_reject.visible"
-      width="40%"
-      :before-close="rejectClose"
-    >
-      <div class="reject-template">
-        <el-select
-          v-model="set_reject.data.rejectRemark"
-          placeholder="选择模板"
-          clearable
-          filterable
-          @change="changeTemplate"
-          size="small"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="(item, index) in templateList"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-button size="small">使用模板</el-button>
-      </div>
-
-      <el-input
-        type="textarea"
-        placeholder="请输入内容"
-        v-model="set_reject.data.rejectRemark"
-        maxlength="200"
-        :autosize="{ minRows: 2, maxRows: 8 }"
-        show-word-limit
-      >
-      </el-input>
-      <span slot="footer" class="dialog-footer">
-        <el-button-group>
-          <el-button @click="rejectClose">取 消</el-button>
-          <el-button type="primary" @click="rejectOk">确 定</el-button>
-        </el-button-group>
-      </span>
-    </el-dialog>
     <el-popover
       ref="catPopover"
       v-model="catPopoverVisible"
       placement="bottom"
       width="200"
       trigger="click"
-      @show="showPopoverHandle('catPopoverVisible', 'articleTable')"
+      @show="showPopoverHandle('catPopoverVisible', 'templateTable')"
     >
       <el-select
         v-model="categorySeletionItem"
@@ -183,32 +133,11 @@
         >保存修改</el-button
       >
     </el-popover>
-    <el-popover
-      ref="recommendPopover"
-      v-model="recomPopoverVisible"
-      placement="bottom"
-      width="150"
-      trigger="click"
-      @show="showPopoverHandle('recomPopoverVisible', 'articleTable')"
-    >
-      <ul class="status-container">
-        <li
-          v-for="(value, key) in ARTICLE_RECOMMEND_TYPE"
-          :key="key"
-          class="status-item click-item"
-          @click="changeType(key)"
-        >
-          {{ value }}
-        </li>
-      </ul>
-    </el-popover>
   </div>
 </template>
 <script>
 import {
   deleteArticle,
-  auditedAticle,
-  rejectArticle,
   updateArticleCat,
   updateArticleType,
   getCategoriesList,
@@ -216,7 +145,7 @@ import {
 import { APPROVE_STATUS, ARTICLE_RECOMMEND_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle, toEdit } from "@/common/mixin";
 export default {
-  name: "Article",
+  name: "Template",
   mixins: [checkTableSelect, showPopoverHandle, toEdit],
   data() {
     return {
@@ -230,7 +159,7 @@ export default {
       tableProps: {
         selection: true,
         setting: {
-          url: "article/queryArticles",
+          url: "article/queryTemplate",
         },
       },
       columns: [
@@ -247,36 +176,12 @@ export default {
                 },
                 on: {
                   click: () => {
-                    console.log(row.userId);
-                    this.toEdit(row.userId, row.articleId, "article", "文章");
+                    this.toEdit(row.userId, row.articleId, "template", "模板");
                   },
                 },
               },
               row.title
             );
-          },
-        },
-        { prop: "likeCount", label: "点赞数" },
-        { prop: "viewCount", label: "浏览量" },
-        {
-          prop: "banner",
-          label: "封面图",
-          render: (h, { row }) => {
-            if (row.banner) {
-              return h("img", {
-                attrs: {
-                  class: "banner-img", // less可以使用 /deep/使样式生效
-                  src: row.banner,
-                },
-              });
-            }
-          },
-        },
-        {
-          prop: "status",
-          label: "状态",
-          formatter: (row, columns, cellValue) => {
-            return APPROVE_STATUS[cellValue];
           },
         },
         {
@@ -287,24 +192,9 @@ export default {
           prop: "userName",
           label: "创建人",
         },
-        {
-          prop: "articleType",
-          label: "文章推荐",
-          formatter: (row, columns, cellValue) => {
-            return ARTICLE_RECOMMEND_TYPE[cellValue];
-          },
-        },
         { prop: "createDate", label: "创建时间" },
         { prop: "updateDate", label: "更新时间" },
-        { prop: "rejectRemark", label: "驳回备注" },
       ],
-      set_reject: {
-        visible: false,
-        data: {
-          articleIds: [],
-          rejectRemark: null,
-        },
-      },
       templateList: [],
       catergorySeletion: [],
       categorySeletionItem: null,
@@ -318,53 +208,20 @@ export default {
     this.ARTICLE_RECOMMEND_TYPE = ARTICLE_RECOMMEND_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.catergorySeletion = (
-      await getCategoriesList({ categoryType: "article" })
+      await getCategoriesList({ categoryType: "template" })
     ).data.dataList;
   },
   methods: {
     search() {
       this.tableProps.setting.params = this.searchData;
-      this.$refs.articleTable.searchTableData();
+      this.$refs.templateTable.searchTableData();
     },
     reset() {
       this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
       this.search();
     },
-    async showRejectDailog() {
-      let rows = this.checkTableSelect("articleTable", "single");
-      if (rows) {
-        this.set_reject.visible = true;
-        this.set_reject.data.articleIds = rows.map((x) => x.articleId);
-      }
-    },
-    async rejectOk() {
-      if (!this.set_reject.data.rejectRemark) {
-        return this.$message.warning("驳回备注不能为空");
-      }
-      let res = await rejectArticle(this.set_reject.data);
-      if (res.code === 0) {
-        this.$message.success(res.msg);
-        this.set_reject.visible = false;
-        this.search();
-      }
-    },
-    rejectClose() {
-      this.set_reject.visible = false;
-      this.set_reject.data.rejectRemark = null;
-    },
-    async auditedAticle() {
-      let rows = this.checkTableSelect("articleTable");
-      if (!rows) return;
-      let res = await auditedAticle({
-        articleIds: rows.map((x) => x.articleId),
-      });
-      if (res.code === 0) {
-        this.$message.success(res.msg);
-        this.search();
-      }
-    },
     async deleteArticle() {
-      let rows = this.checkTableSelect("articleTable");
+      let rows = this.checkTableSelect("templateTable");
       if (!rows) return;
       let res = await deleteArticle({
         articleIds: rows.map((x) => x.articleId),
@@ -397,10 +254,9 @@ export default {
         this.search();
       }
     },
-    addArticle() {
-      this.$router.push({ name: "Editor", query: { type: "article" } });
+    addTemplate() {
+      this.$router.push({ name: "Editor", query: { type: "template" } });
     },
-    changeTemplate() {},
   },
 };
 </script>

@@ -34,7 +34,7 @@ export const HOTPOINT_STATUS = {
 	"remove": "移除",
 }
 
-export const ARTICLE_HOTPOINT_TYPE = {
+export const ARTICLE_RECOMMEND_TYPE = {
 	"normal": "普通",
 	"recommend": "推荐",
 	"hot": "热门",

@@ -58,7 +58,7 @@ export const toEdit = {
 				window.open(routeUrl.href, "_blank");
 			};
 			if (!isEditArticle) {
-				this.$confirm(`你不是改${text}的创建人，确定对该${text}进行编辑?`, "提示", {
+				this.$confirm(`你不是该${text}的创建人，确定对该${text}进行编辑?`, "提示", {
 						confirmButtonText: "确定",
 						cancelButtonText: "取消",
 						type: "warning",

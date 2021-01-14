@@ -199,7 +199,7 @@
     >
       <ul class="status-container">
         <li
-          v-for="(value, key) in ARTICLE_HOTPOINT_TYPE"
+          v-for="(value, key) in ARTICLE_RECOMMEND_TYPE"
           :key="key"
           class="status-item click-item"
           @click="changeType(key)"
@@ -220,7 +220,7 @@ import {
   updateHotPointType,
   updateHotPointStatus,
 } from "@/api/api";
-import { HOTPOINT_STATUS, ARTICLE_HOTPOINT_TYPE } from "@/common/eum";
+import { HOTPOINT_STATUS, ARTICLE_RECOMMEND_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle, toEdit } from "@/common/mixin";
 export default {
   name: "Article",
@@ -245,6 +245,7 @@ export default {
         {
           prop: "hotPointId",
           label: "沸点",
+          "show-overflow-tooltip": true,
           render: (h, { row }) => {
             return h(
               "a",
@@ -262,7 +263,7 @@ export default {
                   },
                 },
               },
-              row.hotPointId
+              row.hotPointContent
             );
           },
         },
@@ -303,7 +304,7 @@ export default {
           prop: "hotPointType",
           label: "沸点推荐",
           formatter: (row, columns, cellValue) => {
-            return ARTICLE_HOTPOINT_TYPE[cellValue];
+            return ARTICLE_RECOMMEND_TYPE[cellValue];
           },
         },
         { prop: "createDate", label: "创建时间" },
@@ -328,7 +329,7 @@ export default {
   created() {
     this.getCategoriesList();
     this.HOTPOINT_STATUS = HOTPOINT_STATUS;
-    this.ARTICLE_HOTPOINT_TYPE = ARTICLE_HOTPOINT_TYPE;
+    this.ARTICLE_RECOMMEND_TYPE = ARTICLE_RECOMMEND_TYPE;
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
   },
   methods: {
@@ -450,4 +451,5 @@ export default {
     margin-bottom: 2px;
   }
 }
+
 </style>

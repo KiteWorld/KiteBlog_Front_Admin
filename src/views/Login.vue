@@ -76,7 +76,7 @@ export default {
             Cookies.set("token", res.data.token);
             Cookies.set("name", res.data.name);
             Cookies.set("userId", res.data.userId);
-            this.$router.push({ name: "Main" });
+            this.$router.push({ path: "/" });
           }
         }
       });
