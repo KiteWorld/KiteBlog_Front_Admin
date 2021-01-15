@@ -5,7 +5,7 @@
         <el-scrollbar style="height: 100%">
           <el-menu
             class="left-menu"
-            default-active="/dashboard"
+            :default-active="key"
             background-color="#fff"
             v-if="routerList.length > 0"
           >
@@ -41,7 +41,7 @@
           </el-popover>
         </div>
         <tags-view class="tags-view" />
-        <keep-alive :include="cacheViews">
+        <keep-alive :include="cachedViews">
           <router-view class="main-content" />
         </keep-alive>
       </div>
@@ -69,27 +69,25 @@ export default {
   async created() {
     this.userName = Cookies.get("name");
   },
-  activated() {
-    console.log(this.cacheViews);
-  },
   computed: {
     visitedViews() {
       return this.$store.state.tagsView.visitedViews;
     },
-    cacheViews() {
-      return this.$store.state.tagsView.cacheViews;
+    cachedViews() {
+      return this.$store.state.tagsView.cachedViews;
     },
     routerList() {
       return this.$store.state.permission.routerList;
     },
+    key() {
+      return this.$route.path;
+    },
   },
   methods: {
-    // toPath(view) {
-    //   this.$store.dispatch("tagsView/addVisitedView", view);
-    // },
     logout() {
       Cookies.remove("name");
       Cookies.remove("token");
+      this.$store.dispatch("permission/addRouterList", []);
       this.$router.push({ name: "Login" });
     },
   },

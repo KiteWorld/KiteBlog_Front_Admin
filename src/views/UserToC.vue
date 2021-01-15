@@ -124,7 +124,7 @@ import {
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 
 export default {
-  name: "User",
+  name: "UserToC",
   mixins: [checkTableSelect, showPopoverHandle],
   data() {
     return {
@@ -199,12 +199,6 @@ export default {
     this.USER_STATUS = USER_STATUS;
     this.USER_ROLE = USER_ROLE;
     this.USER_SEX = USER_SEX;
-    this.tableHeight = window.innerHeight - 150;
-  },
-  mounted() {
-    window.addEventListener("resize", () => {
-      this.tableHeight = window.innerHeight - 150;
-    });
   },
   methods: {
     search() {

@@ -56,3 +56,17 @@ body {
 .el-tooltip__popper.is-dark {
 	max-width: 500px !important;
 }
+
+.el-form-item {
+	display: flex;
+	align-items: center;
+
+	/deep/.el-form-item__label {
+		flex-shrink: 0;
+	}
+
+	/deep/.el-form-item__content {
+		flex: 1;
+		margin-left: 0 !important;
+	}
+}

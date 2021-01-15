@@ -1,3 +1,4 @@
 export const ADD_VISITED_VIEW = "ADD_VISITED_VIEW"
 export const DEL_VISITED_VIEW = "DEL_VISITED_VIEW"
-export const ADD_ROUTER = "ADD_ROUTER"
+export const ADD_ROUTER_LIST = "ADD_ROUTER_LIST"
+export const UPDATE_ROLE = "UPDATE_ROLE"

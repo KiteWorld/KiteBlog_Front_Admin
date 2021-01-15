@@ -153,7 +153,7 @@ import {
 } from "../api/api";
 import { checkTableSelect } from "@/common/mixin";
 export default {
-  name: "Catergrey",
+  name: "ArticleCategory",
   mixins: [checkTableSelect],
   data() {
     return {

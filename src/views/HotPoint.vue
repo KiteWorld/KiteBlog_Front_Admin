@@ -223,7 +223,7 @@ import {
 import { HOTPOINT_STATUS, ARTICLE_RECOMMEND_TYPE } from "@/common/eum";
 import { checkTableSelect, showPopoverHandle, toEdit } from "@/common/mixin";
 export default {
-  name: "Article",
+  name: "HotPoint",
   mixins: [checkTableSelect, showPopoverHandle, toEdit],
   data() {
     return {
@@ -327,6 +327,7 @@ export default {
     };
   },
   created() {
+    console.log("hotpoint");
     this.getCategoriesList();
     this.HOTPOINT_STATUS = HOTPOINT_STATUS;
     this.ARTICLE_RECOMMEND_TYPE = ARTICLE_RECOMMEND_TYPE;
@@ -451,5 +452,4 @@ export default {
     margin-bottom: 2px;
   }
 }
-
 </style>
