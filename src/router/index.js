@@ -51,7 +51,6 @@ const getRoutes = (routerList) => {
 }
 
 router.beforeEach(async (to, from, next) => {
-  console.log(Cookies.get('token'))
   if (Cookies.get('token')) {
     if (to.path === '/adminLogin') {
       next({

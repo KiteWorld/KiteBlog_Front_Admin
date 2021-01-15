@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="table-container" ref="TableContainer">
     <el-table
       ref="baseTable"
       :data="tableData"
@@ -87,7 +87,6 @@ export default {
     };
   },
   async created() {
-    this.tableHeight = this.tableProps.height || window.innerHeight - 150;
     this.setting = this.tableProps.setting || {};
     this.pageSize = this.setting.pageSize || 20;
     this.currentPage = this.setting.page || 1;
@@ -100,9 +99,16 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener("resize", () => {
-      this.tableHeight = window.innerHeight - 150;
-    });
+    if (this.tableProps.height) {
+      this.tableHeight = this.tableProps.height;
+    } else {
+      this.tableHeight =
+        window.innerHeight - this.$refs.TableContainer.offsetTop - 50;
+      window.addEventListener("resize", () => {
+        this.tableHeight =
+          window.innerHeight - this.$refs.TableContainer.offsetTop - 50;
+      });
+    }
   },
   watch: {
     dataList() {

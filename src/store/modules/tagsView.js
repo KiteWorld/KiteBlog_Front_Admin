@@ -4,7 +4,8 @@ import {
 } from "../mutation_type"
 
 const state = {
-	visitedViews: []
+	visitedViews: [],
+	cacheViews: []
 }
 
 const mutations = {
@@ -13,10 +14,16 @@ const mutations = {
 		state.visitedViews.push(
 			Object.assign({}, view)
 		)
+		if (!view.onCache) state.cacheViews.push(view.name)
+
 	},
 	[DEL_VISITED_VIEW]: (state, view) => {
-		const index = state.visitedViews.findIndex(i => i.path === view.path)
-		state.visitedViews.splice(index, 1)
+		const visitedIndex = state.visitedViews.findIndex(i => i.path === view.path)
+		state.visitedViews.splice(visitedIndex, 1)
+		if (!view.onCache) {
+			const cacheIndex = state.cacheViews.findIndex(i => i.path === view.path)
+			state.cacheViews.splice(cacheIndex, 1)
+		}
 	}
 }
 

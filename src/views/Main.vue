@@ -40,9 +40,9 @@
             <span slot="reference" class="username">{{ userName }}</span>
           </el-popover>
         </div>
-        <tags-view />
-        <keep-alive>
-          <router-view />
+        <tags-view class="tags-view" />
+        <keep-alive :include="cacheViews">
+          <router-view class="main-content" />
         </keep-alive>
       </div>
     </div>
@@ -69,9 +69,15 @@ export default {
   async created() {
     this.userName = Cookies.get("name");
   },
+  activated() {
+    console.log(this.cacheViews);
+  },
   computed: {
     visitedViews() {
       return this.$store.state.tagsView.visitedViews;
+    },
+    cacheViews() {
+      return this.$store.state.tagsView.cacheViews;
     },
     routerList() {
       return this.$store.state.permission.routerList;
@@ -112,6 +118,7 @@ export default {
       }
     }
     .right {
+      height: 100%;
       flex: 1;
       overflow: hidden;
       display: flex;
@@ -120,14 +127,14 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 50px;
+        height: 40px;
+        flex-shrink: 0;
         box-shadow: 0 0 10px rgb(211, 211, 211);
         .collapse-icon-container {
           cursor: pointer;
           font-size: 22px;
           margin-left: 10px;
         }
-
         .username {
           font-size: 12px;
           padding: 10px;
@@ -137,6 +144,9 @@ export default {
             color: #409eff;
           }
         }
+      }
+      .main-content {
+        flex: 1;
       }
     }
   }
