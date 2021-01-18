@@ -57,12 +57,12 @@
     <el-dialog
       :title="set_user.title"
       :visible.sync="set_user.visible"
-      width="600px"
+      width="620px"
     >
       <el-form
         :model="set_user.data"
         ref="UserForm"
-        label-width="90px"
+        label-width="100px"
         :inline="false"
         size="samll"
       >
@@ -86,7 +86,11 @@
           </el-input>
         </el-form-item>
         <el-form-item label="角色类型:">
-          <el-radio-group v-model="set_user.data.role" size="mini">
+          <el-radio-group
+            v-model="set_user.data.role"
+            size="mini"
+            @change="changeRole"
+          >
             <el-radio label="superadmin" border>超级管理员</el-radio>
             <el-radio label="admin" border>管理员</el-radio>
             <el-radio label="auditor" border>审核员</el-radio>
@@ -94,17 +98,36 @@
             <el-radio label="visitor" border>看客</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="上传头像："
-          ><el-upload
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
+
+        <el-form-item label="关联ToC用户:">
+          <el-select
+            v-model="set_user.data.tocUserId"
+            multiple
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入用户名搜索（需要先选择角色类型）"
+            :remote-method="searchUser"
+            :loading="set_user.loading"
+            size="small"
+            style="width: 400px"
           >
-            <img v-if="set_user.data.icon" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
+            <el-option
+              v-for="item in set_user.tocUserList"
+              :key="item.userId"
+              :label="userName"
+              :value="item.userId"
+            >
+              {{ item.userName }}
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="上传头像：">
+          <UploadAvatar
+            ref=""
+            :uploadProps="set_user.uploadProps"
+            :imgUrl="set_user.data.avtarUrl"
+          />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -122,20 +145,18 @@
 <script>
 import { deleteUsers } from "../api/api";
 import { USER_ROLE } from "../common/eum";
+import Cookies from "js-cookie";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
+import UploadAvatar from "@/components/UploadAvatar";
 
 export default {
   name: "UserCMS",
+  components: {
+    UploadAvatar,
+  },
   mixins: [checkTableSelect, showPopoverHandle],
   data() {
     return {
-      tableData: [],
-      selection: [],
-      total: null,
-      currentPage: 1,
-      pageSize: 20,
-      tableHeight: null,
-      rows: null,
       propverVisible: false,
       searchData: {
         userName: null,
@@ -147,11 +168,24 @@ export default {
       set_user: {
         title: "添加CMS用户",
         visible: false,
+        loading: false,
         data: {
           userName: null,
           password: null,
           role: null,
-          icon: null,
+          tocUserId: null,
+          avtarUrl: null,
+        },
+        tocUserList: [],
+        uploadProps: {
+          action: "http://localhost:1874/upload/uploadAvatar",
+          headers: {
+            Authorization: "Bearer " + Cookies.get("token"),
+          },
+          accept: "image/jpeg,image/png",
+          onSuccess: (res) => {
+            this.set_user.data.avtarUrl = res.data.imgUrl;
+          },
         },
       },
       rules: {},
@@ -183,6 +217,24 @@ export default {
           },
         },
         { prop: "createDate", label: "注册日期" },
+        {
+          prop: "doSome",
+          label: "操作",
+          render: (h, { row }) => {
+            return h("el-button", {
+              attrs: {
+                icon: "el-icon-edit",
+                size: "small",
+              },
+              on: {
+                click: () => {
+                  this.set_user.data = Object.assign(this.set_user.data, row);
+                  this.set_user.visible = true;
+                },
+              },
+            });
+          },
+        },
       ],
     };
   },
@@ -199,8 +251,21 @@ export default {
       this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
       this.search();
     },
+    changeRole(label) {
+      console.log(label);
+    },
+    searchUser(query) {
+      if (query !== "") {
+        this.set_user.loading = true;
+        console.log(query);
+      } else {
+        this.options = [];
+      }
+    },
     addUser() {},
-    saveUser() {},
+    saveUser() {
+      console.log(this.set_user.data);
+    },
     async delUsers() {
       let rows = this.checkTableSelect("usersTable");
       if (!rows) return;
@@ -210,8 +275,6 @@ export default {
       this.$message.success(res.msg);
       if (res.code === 0) this.search();
     },
-    handleAvatarSuccess() {},
-    beforeAvatarUpload() {},
   },
 };
 </script>
@@ -236,32 +299,6 @@ export default {
   }
   /deep/ .el-radio {
     margin-right: 0;
-  }
-}
-
-.avatar-uploader {
-  /deep/.el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  /deep/.el-upload:hover {
-    border-color: #409eff;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
-  }
-  .avatar {
-    width: 100px;
-    height: 100px;
-    display: block;
   }
 }
 </style>
