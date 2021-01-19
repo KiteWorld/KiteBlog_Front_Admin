@@ -14,6 +14,11 @@ export const USER_ROLE = {
 	"normal": "普通用户",
 	"VIP": "VIP",
 	"SVIP": "SVIP",
+	"superadmin": "超级管理员",
+	"admin": "管理员",
+	"auditor": "审核员",
+	"editor": "编辑",
+	"visitor": "看客"
 }
 
 export const USER_SEX = {

@@ -146,7 +146,7 @@ export default {
       tableProps: {
         selection: true,
         setting: {
-          url: "users/queryUsers",
+          url: "users/queryUser",
         },
       },
       columns: [
@@ -177,14 +177,14 @@ export default {
           formatter: (row, column, cellValue) => USER_SEX[cellValue],
         },
         {
-          prop: "userIcon",
+          prop: "avatar",
           label: "头像",
           render: (h, { row }) => {
-            if (row.icon) {
+            if (row.avatar) {
               return h("img", {
                 attrs: {
-                  class: "user-icon", // less可以使用 /deep/使样式生效
-                  src: row.icon,
+                  class: "user-avatar", // less可以使用 /deep/使样式生效
+                  src: row.avatar,
                 },
               });
             }
@@ -238,7 +238,7 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
   padding: 10px 4px;
-  /deep/.user-icon {
+  /deep/.user-avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;

@@ -1,5 +1,6 @@
 import axios from "axios"
 
+
 export function adminLogin(params) {
 	const url = `auth/adminLogin`;
 	return axios.post(url, params).then((res) => {
@@ -16,8 +17,18 @@ export function queryRouter(params) {
 	})
 }
 
-export function getUsers(params) {
-	const url = `users/queryUsers`;
+//--------------ToC用户-----------------
+export function getUser(params) {
+	const url = `users/queryUser`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
+export function queryAllUsersList(params) {
+	const url = `users/queryAllUsersList`;
 	return axios.get(url, {
 		params: params
 	}).then((res) => {
@@ -36,6 +47,38 @@ export function deleteUsers(params) {
 		return Promise.resolve(res.data)
 	})
 }
+
+//----------CMS用户---------
+export function queryCMSUser(params) {
+	const url = `users/queryCMSUser`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function queryCMSUserById(params) {
+	const url = `users/queryCMSUserById`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function saveCMSUser(params) {
+	const url = `users/deleteCMSUser`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+export function deleteCMSUser(params) {
+	const url = `users/deleteCMSUser`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
+
 
 //------------分类--------------
 export function getCategories(params) {

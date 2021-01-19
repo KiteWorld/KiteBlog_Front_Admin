@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="set_user.visible = true"
+          <el-button plain size="small" @click="showUserDialog()"
             >新增</el-button
           >
           <el-button plain size="small" @click="delUsers()">删除</el-button>
@@ -81,13 +81,14 @@
             v-model="set_user.data.password"
             placeholder="请输入"
             type="password"
+            show-password
             style="width: 400px"
           >
           </el-input>
         </el-form-item>
         <el-form-item label="角色类型:">
           <el-radio-group
-            v-model="set_user.data.role"
+            v-model="set_user.data.userRole"
             size="mini"
             @change="changeRole"
           >
@@ -101,8 +102,7 @@
 
         <el-form-item label="关联ToC用户:">
           <el-select
-            v-model="set_user.data.tocUserId"
-            multiple
+            v-model="set_user.data.ToCUserId"
             filterable
             remote
             reserve-keyword
@@ -113,12 +113,11 @@
             style="width: 400px"
           >
             <el-option
-              v-for="item in set_user.tocUserList"
+              v-for="item in tocUserList"
               :key="item.userId"
-              :label="userName"
+              :label="item.userName"
               :value="item.userId"
             >
-              {{ item.userName }}
             </el-option>
           </el-select>
         </el-form-item>
@@ -126,7 +125,7 @@
           <UploadAvatar
             ref=""
             :uploadProps="set_user.uploadProps"
-            :imgUrl="set_user.data.avtarUrl"
+            :imgUrl="set_user.data.avatar"
           />
         </el-form-item>
       </el-form>
@@ -143,7 +142,7 @@
 </template>
 
 <script>
-import { deleteUsers } from "../api/api";
+import { deleteUsers, queryAllUsersList, queryCMSUserById } from "../api/api";
 import { USER_ROLE } from "../common/eum";
 import Cookies from "js-cookie";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
@@ -170,13 +169,14 @@ export default {
         visible: false,
         loading: false,
         data: {
+          CMSUserId: null,
           userName: null,
           password: null,
-          role: null,
-          tocUserId: null,
-          avtarUrl: null,
+          userRole: null,
+          ToCUserId: null,
+          avatar: null,
         },
-        tocUserList: [],
+        tocUserList: [], //嵌套太深，可以用 push 或者 this.$set() 来刷新列表。嫌麻烦的话，可以直接写在 data 里面 。为了照顾萌新（我也是萌新，所以深知萌新的痛苦），我这里演示一下。
         uploadProps: {
           action: "http://localhost:1874/upload/uploadAvatar",
           headers: {
@@ -184,15 +184,16 @@ export default {
           },
           accept: "image/jpeg,image/png",
           onSuccess: (res) => {
-            this.set_user.data.avtarUrl = res.data.imgUrl;
+            this.set_user.data.avatar = res.data.imgUrl;
           },
         },
       },
+      tocUserList: [], // 直接写在 data 里， Vue是可以监听到 toUserList 的引用发生改变，所以视图就会刷新
       rules: {},
       tableProps: {
         selection: true,
         setting: {
-          url: "users/queryUsers",
+          url: "users/queryCMSUser",
         },
       },
       columns: [
@@ -202,15 +203,16 @@ export default {
           label: "角色",
           formatter: (row, column, cellValue) => USER_ROLE[cellValue], //加index eslint报错
         },
+        { prop: "ToCUserName", label: "关联的ToC用户" },
         {
-          prop: "userIcon",
+          prop: "avatar",
           label: "头像",
           render: (h, { row }) => {
-            if (row.icon) {
+            if (row.avatar) {
               return h("img", {
                 attrs: {
-                  class: "user-icon", // less可以使用 /deep/使样式生效
-                  src: row.icon,
+                  class: "user-avatar", // less可以使用 /deep/使样式生效
+                  src: row.avatar,
                 },
               });
             }
@@ -228,8 +230,7 @@ export default {
               },
               on: {
                 click: () => {
-                  this.set_user.data = Object.assign(this.set_user.data, row);
-                  this.set_user.visible = true;
+                  this.showUserDialog(row);
                 },
               },
             });
@@ -240,6 +241,7 @@ export default {
   },
   async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
+    this.userDateInit = JSON.parse(JSON.stringify(this.set_user.data));
     this.USER_ROLE = USER_ROLE;
   },
   methods: {
@@ -252,17 +254,55 @@ export default {
       this.search();
     },
     changeRole(label) {
-      console.log(label);
+      this.tocUserList = [];
+      this.set_user.data.userRole = label;
     },
-    searchUser(query) {
+    async searchUser(query) {
       if (query !== "") {
         this.set_user.loading = true;
-        console.log(query);
+        let res = await queryAllUsersList({
+          userRole: this.set_user.data.userRole,
+          userName: query,
+        });
+        if (res.code == 0) {
+          // 1、使用 this.$set 赋值，并刷新视图
+          // this.$set(this.set_user, "tocUserList", res.data.dataList);
+
+          //2、用 push 来追加数据，视图也会刷新
+          // this.set_user.toUserList = [] // 先清空数组
+          // this.set_user.toUserList.push(...res.data.dataList)
+
+          //3、直接写在 data 里面的 tocUserList ，直接赋值就可以了。Vue 可以监听到 tocUserList 的应用发生变化。
+          //tocUserList只是用于遍历加载下来选择项，这里已经可以满足需求了。
+          //如果数组里面有嵌套了多次对象，视图还是没法监听到的。这里就不展开了。
+          this.tocUserList = res.data.dataList || [];
+          console.log(this.tocUserList);
+        }
+        console.log("x");
+        this.set_user.loading = false;
       } else {
-        this.options = [];
+        this.tocUserList = [];
       }
     },
-    addUser() {},
+    async showUserDialog(row) {
+      let set = this.set_user;
+      if (row) {
+        let res = await queryCMSUserById({ CMSUserId: row.CMSUserId });
+        if (res.code !== 0) {
+          return this.$message.error("获取用户信息失败！");
+        }
+        set.data = Object.assign(set.data, res.data);
+        this.tocUserList = [
+          {
+            userName: set.data.ToCUserName + "(原值)",
+            userId: set.data.ToCUserId,
+          },
+        ];
+      } else {
+        set.data = Object.assign(set.data, this.userDateInit);
+      }
+      set.visible = true;
+    },
     saveUser() {
       console.log(this.set_user.data);
     },
@@ -286,7 +326,7 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
   padding: 10px 4px;
-  /deep/.user-icon {
+  /deep/.user-avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
