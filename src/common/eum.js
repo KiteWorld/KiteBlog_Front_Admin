@@ -10,10 +10,13 @@ export const USER_STATUS_TAG_TYPE = {
 	"2": "danger",
 	"3": "info"
 }
-export const USER_ROLE = {
+export const TOC_USER_ROLE = {
 	"normal": "普通用户",
 	"VIP": "VIP",
 	"SVIP": "SVIP",
+	"tocms": "后台关联用户",
+}
+export const CMS_USER_ROLE = {
 	"superadmin": "超级管理员",
 	"admin": "管理员",
 	"auditor": "审核员",

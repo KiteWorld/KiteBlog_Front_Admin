@@ -6,7 +6,9 @@
           <el-button plain size="small" @click="showUserDialog()"
             >新增</el-button
           >
-          <el-button plain size="small" @click="delUsers()">删除</el-button>
+          <el-button plain size="small" @click="deleteCMSUser()"
+            >删除</el-button
+          >
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -29,12 +31,11 @@
               size="small"
             >
               <el-option
-                v-for="(value, name) in USER_ROLE"
+                v-for="(value, name) in CMS_USER_ROLE"
                 :key="name"
                 :value="name"
                 :label="value"
               >
-                <!-- $refs.search.$refs.messageDrop.show() 为了解决下拉选择之后，dropdown收起问题 -->
                 {{ value }}
               </el-option>
             </el-select>
@@ -62,11 +63,12 @@
       <el-form
         :model="set_user.data"
         ref="UserForm"
+        :rules="rules"
         label-width="100px"
         :inline="false"
         size="samll"
       >
-        <el-form-item label="用户名：">
+        <el-form-item label="用户名：" prop="userName">
           <el-input
             size="small"
             v-model="set_user.data.userName"
@@ -75,7 +77,7 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="密码：">
+        <el-form-item label="密码：" prop="password">
           <el-input
             size="small"
             v-model="set_user.data.password"
@@ -86,17 +88,15 @@
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="角色类型:">
-          <el-radio-group
-            v-model="set_user.data.userRole"
-            size="mini"
-            @change="changeRole"
-          >
-            <el-radio label="superadmin" border>超级管理员</el-radio>
-            <el-radio label="admin" border>管理员</el-radio>
-            <el-radio label="auditor" border>审核员</el-radio>
-            <el-radio label="editor" border>编辑</el-radio>
-            <el-radio label="visitor" border>看客</el-radio>
+        <el-form-item label="角色类型:" prop="userRole">
+          <el-radio-group v-model="set_user.data.userRole" size="mini">
+            <el-radio
+              :label="key"
+              :key="key"
+              border
+              v-for="(value, key) in CMS_USER_ROLE"
+              >{{ value }}</el-radio
+            >
           </el-radio-group>
         </el-form-item>
 
@@ -105,6 +105,7 @@
             v-model="set_user.data.ToCUserId"
             filterable
             remote
+            clearable
             reserve-keyword
             placeholder="请输入用户名搜索（需要先选择角色类型）"
             :remote-method="searchUser"
@@ -142,8 +143,14 @@
 </template>
 
 <script>
-import { deleteUsers, queryAllUsersList, queryCMSUserById } from "../api/api";
-import { USER_ROLE } from "../common/eum";
+import {
+  deleteCMSUser,
+  queryAllUsersList,
+  queryCMSUserById,
+  saveCMSUser,
+} from "../api/api";
+import { userName, password, userRole } from "@/common/rules";
+import { CMS_USER_ROLE } from "../common/eum";
 import Cookies from "js-cookie";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 import UploadAvatar from "@/components/UploadAvatar";
@@ -201,7 +208,7 @@ export default {
         {
           prop: "userRole",
           label: "角色",
-          formatter: (row, column, cellValue) => USER_ROLE[cellValue], //加index eslint报错
+          formatter: (row, column, cellValue) => CMS_USER_ROLE[cellValue], //加index eslint报错
         },
         { prop: "ToCUserName", label: "关联的ToC用户" },
         {
@@ -242,7 +249,8 @@ export default {
   async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.userDateInit = JSON.parse(JSON.stringify(this.set_user.data));
-    this.USER_ROLE = USER_ROLE;
+    this.rules = { userName, password, userRole };
+    this.CMS_USER_ROLE = CMS_USER_ROLE;
   },
   methods: {
     search() {
@@ -253,17 +261,10 @@ export default {
       this.searchData = JSON.parse(JSON.stringify(this.searchDataBackUp));
       this.search();
     },
-    changeRole(label) {
-      this.tocUserList = [];
-      this.set_user.data.userRole = label;
-    },
     async searchUser(query) {
       if (query !== "") {
         this.set_user.loading = true;
-        let res = await queryAllUsersList({
-          userRole: this.set_user.data.userRole,
-          userName: query,
-        });
+        let res = await queryAllUsersList({ userName: query });
         if (res.code == 0) {
           // 1、使用 this.$set 赋值，并刷新视图
           // this.$set(this.set_user, "tocUserList", res.data.dataList);
@@ -276,9 +277,7 @@ export default {
           //tocUserList只是用于遍历加载下来选择项，这里已经可以满足需求了。
           //如果数组里面有嵌套了多次对象，视图还是没法监听到的。这里就不展开了。
           this.tocUserList = res.data.dataList || [];
-          console.log(this.tocUserList);
         }
-        console.log("x");
         this.set_user.loading = false;
       } else {
         this.tocUserList = [];
@@ -292,28 +291,47 @@ export default {
           return this.$message.error("获取用户信息失败！");
         }
         set.data = Object.assign(set.data, res.data);
-        this.tocUserList = [
-          {
-            userName: set.data.ToCUserName + "(原值)",
-            userId: set.data.ToCUserId,
-          },
-        ];
+        if (set.data.ToCUserId) {
+          this.tocUserList = [
+            {
+              userName: set.data.ToCUserName,
+              userId: set.data.ToCUserId,
+            },
+          ];
+        }
       } else {
         set.data = Object.assign(set.data, this.userDateInit);
       }
       set.visible = true;
     },
     saveUser() {
-      console.log(this.set_user.data);
+      this.$refs.UserForm.validate(async (valid) => {
+        if (valid) {
+          let res = await saveCMSUser(this.set_user.data);
+          if (res.code === 0) {
+            this.search();
+            this.$message.success(res.msg);
+            this.set_user.visible = false;
+            return;
+          }
+          this.$message.warning(res.msg);
+        } else {
+          return false;
+        }
+      });
     },
-    async delUsers() {
+    async deleteCMSUser() {
       let rows = this.checkTableSelect("usersTable");
       if (!rows) return;
-      let res = await deleteUsers({
-        userIds: rows.map((x) => x.userId),
+      let res = await deleteCMSUser({
+        CMSUserIds: rows.map((x) => x.CMSUserId),
       });
-      this.$message.success(res.msg);
-      if (res.code === 0) this.search();
+      if (res.code === 0) {
+        this.$message.success(res.msg);
+        this.search();
+      } else {
+        this.$message.warning(res.msg);
+      }
     },
   },
 };

@@ -27,6 +27,15 @@ export function getUser(params) {
 	})
 }
 
+export function queryUserById(params) {
+	const url = `users/queryUserById`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
 export function queryAllUsersList(params) {
 	const url = `users/queryAllUsersList`;
 	return axios.get(url, {
@@ -43,6 +52,13 @@ export function updateUserStatus(params) {
 }
 export function deleteUsers(params) {
 	const url = `users/deleteUsers`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
+export function saveUser(params) {
+	const url = `users/saveUser`;
 	return axios.post(url, params).then((res) => {
 		return Promise.resolve(res.data)
 	})
@@ -66,7 +82,7 @@ export function queryCMSUserById(params) {
 	})
 }
 export function saveCMSUser(params) {
-	const url = `users/deleteCMSUser`;
+	const url = `users/saveCMSUser`;
 	return axios.post(url, params).then((res) => {
 		return Promise.resolve(res.data)
 	})

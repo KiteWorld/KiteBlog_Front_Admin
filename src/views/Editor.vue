@@ -55,7 +55,7 @@
           v-popover:routerPopover
           >{{ saveBtnText }}</el-button
         >
-        <el-button size="small" @click="clearEditor">清空</el-button>
+        <el-button size="small" @click="clearEditor">新建</el-button>
       </el-button-group>
     </div>
     <div class="editor-main">
@@ -75,8 +75,8 @@
         style="margin-bottom: 2px"
         v-show="type == 'template'"
       ></el-input>
-      <!-- VueSimplemde编辑器 图标默认使用Font Awesome, CDN 地址用的是 Font Awesome 官方提供的地址，国内无法访问，可以在 node_modules 里搜索 simplemde.js 
-      并修改下方的 CDN 地址，图标就可以正常显示了。  
+      <!-- VueSimplemde编辑器 图标默认使用Font Awesome, CDN 地址用的是 Font Awesome 官方提供的地址，国内无法访问，
+      可以在 node_modules 里搜索 simplemde.js 并修改下方的 CDN 地址，图标就可以正常显示了。  
       https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css -->
       <div class="editor-container">
         <vue-simplemde
@@ -205,11 +205,13 @@ export default {
       if (this.id) {
         res = await queryArticleById({ articleId: this.id });
         this.article = res.data;
+        this.recommendType = res.data.articleType;
       }
     } else {
       if (this.id) {
         res = await queryHotPointById({ hotPointId: this.id });
         this.hotPoint = res.data;
+        this.recommendType = res.data.hotPointType;
       }
     }
     await this.getCategoriesList();
@@ -222,6 +224,19 @@ export default {
       this.recommendType = null;
       this.getCategoriesList();
     },
+
+    async getCategoriesList() {
+      this.typeText =
+        this.type === "article"
+          ? "文章"
+          : this.type === "hotpoint"
+          ? "沸点"
+          : "模板";
+      this.categorySeletion = (
+        await getCategoriesList({ categoryType: this.type })
+      ).data.dataList;
+    },
+
     async saveContent() {
       let res = null;
       switch (this.type) {
@@ -256,17 +271,6 @@ export default {
       this.routerPopoverVisible = true;
       this.$message.success(res.msg);
     },
-    async getCategoriesList() {
-      this.typeText =
-        this.type === "article"
-          ? "文章"
-          : this.type === "hotpoint"
-          ? "沸点"
-          : "模板";
-      this.categorySeletion = (
-        await getCategoriesList({ categoryType: this.type })
-      ).data.dataList;
-    },
     async saveContentType(type) {
       let res = null;
       this[type].content = this[type].markdown
@@ -290,14 +294,21 @@ export default {
         this.$message.warning("请选择推荐分类");
         return res;
       }
-      this[type].userId = Cookies.get("userId");
+      if (!this[type].userId) {
+        this[type].userId = Cookies.get("userId");
+      } else {
+        this[type].modifierId = Cookies.get("userId");
+      }
+
       res = await saveArticle(this[type]);
       this[type].articleId = this.id = res.data ? res.data.articleId : null;
       return res;
     },
+
     imgUpload() {},
+
     clearEditor() {
-      this.$confirm(`${this.typeText}内容将被清空,确认进行重置？`, "提示", {
+      this.$confirm(`之前编辑的内容将清空,确认新增？`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -305,6 +316,7 @@ export default {
         .then(() => {
           this.id = null;
           this.categoryId = null;
+          this.recommendType = null;
           switch (this.type) {
             case "article":
               this.article = Object.assign(this.article, this.articleInit);
@@ -325,6 +337,7 @@ export default {
           return;
         });
     },
+
     OkRouter() {
       this.$router.push({ path: `/${this.type}` });
     },

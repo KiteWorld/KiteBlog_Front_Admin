@@ -327,7 +327,6 @@ export default {
     };
   },
   created() {
-    console.log("hotpoint");
     this.getCategoriesList();
     this.HOTPOINT_STATUS = HOTPOINT_STATUS;
     this.ARTICLE_RECOMMEND_TYPE = ARTICLE_RECOMMEND_TYPE;

@@ -8,6 +8,7 @@
       :height="tableHeight"
       @selection-change="selectionChange"
     >
+      <!-- v-bind="tableProps" -->
       <el-table-column
         align="center"
         prop="name"
@@ -105,8 +106,10 @@ export default {
       this.tableHeight =
         window.innerHeight - this.$refs.TableContainer.offsetTop - 50;
       window.addEventListener("resize", () => {
-        this.tableHeight =
-          window.innerHeight - this.$refs.TableContainer.offsetTop - 50;
+        if (this.$refs.TableContainer) {
+          this.tableHeight =
+            window.innerHeight - this.$refs.TableContainer.offsetTop - 50;
+        }
       });
     }
   },

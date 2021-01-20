@@ -237,6 +237,8 @@ export default {
         {
           prop: "title",
           label: "标题",
+          "min-width": 150,
+          "show-overflow-tooltip": true,
           render: (h, { row }) => {
             return h(
               "a",
@@ -256,6 +258,25 @@ export default {
             );
           },
         },
+
+        {
+          prop: "status",
+          label: "状态",
+          formatter: (row, columns, cellValue) => {
+            return APPROVE_STATUS[cellValue];
+          },
+        },
+        {
+          prop: "articleType",
+          label: "文章推荐",
+          formatter: (row, columns, cellValue) => {
+            return ARTICLE_RECOMMEND_TYPE[cellValue];
+          },
+        },
+        {
+          prop: "categoryName",
+          label: "分类",
+        },
         { prop: "likeCount", label: "点赞数" },
         { prop: "viewCount", label: "浏览量" },
         {
@@ -273,30 +294,24 @@ export default {
           },
         },
         {
-          prop: "status",
-          label: "状态",
-          formatter: (row, columns, cellValue) => {
-            return APPROVE_STATUS[cellValue];
-          },
-        },
-        {
-          prop: "categoryName",
-          label: "分类",
-        },
-        {
           prop: "userName",
           label: "创建人",
+          "min-width": 120,
         },
         {
-          prop: "articleType",
-          label: "文章推荐",
-          formatter: (row, columns, cellValue) => {
-            return ARTICLE_RECOMMEND_TYPE[cellValue];
-          },
+          prop: "modifierName",
+          label: "修改人",
+          "min-width": 120,
+          "show-overflow-tooltip": true,
         },
-        { prop: "createDate", label: "创建时间" },
-        { prop: "updateDate", label: "更新时间" },
-        { prop: "rejectRemark", label: "驳回备注" },
+
+        { prop: "createDate", label: "创建时间", width: 155 },
+        { prop: "updateDate", label: "更新时间", width: 155 },
+        {
+          prop: "rejectRemark",
+          label: "驳回备注 ",
+          "show-overflow-tooltip": true,
+        },
       ],
       set_reject: {
         visible: false,
