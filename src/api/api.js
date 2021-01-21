@@ -81,6 +81,15 @@ export function queryCMSUserById(params) {
 		return Promise.resolve(res.data)
 	})
 }
+
+export function queryJobNoMax(params) {
+	const url = `users/queryJobNoMax`;
+	return axios.get(url, {
+		params: params
+	}).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
 export function saveCMSUser(params) {
 	const url = `users/saveCMSUser`;
 	return axios.post(url, params).then((res) => {

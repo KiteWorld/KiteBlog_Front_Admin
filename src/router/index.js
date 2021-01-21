@@ -60,7 +60,8 @@ router.beforeEach(async (to, from, next) => {
       if (store.state.permission.routerList.length !== 0) {
         next()
       } else {
-        let routerList = (await queryRouter()).data.dataList
+        let routerList
+        routerList = (await queryRouter()).data.dataList
         store.dispatch('permission/addRouterList', routerList)
         getRoutes(routerList)
         router.addRoutes(routerListResolve)
@@ -68,7 +69,6 @@ router.beforeEach(async (to, from, next) => {
           ...to,
           replace: true
         })
-
       }
     }
   } else {

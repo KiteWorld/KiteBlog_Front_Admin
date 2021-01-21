@@ -5,30 +5,17 @@
         <el-input
           placeholder="搜索分类"
           v-model="filterText"
-          size="small"
           style="width: 300px"
         >
         </el-input>
         <el-button-group>
-          <el-button
-            class="add-root-button"
-            type="default"
-            size="small"
-            @click="addRootCat"
+          <el-button class="add-root-button" @click="addRootCat"
             >添加一级分类</el-button
           >
-          <el-button
-            class="add-root-button"
-            type="default"
-            size="small"
-            v-popover:catPopover
+          <el-button class="add-root-button" v-popover:catPopover
             >分类文章迁移</el-button
           >
-          <el-button
-            class="add-root-button"
-            type="default"
-            size="small"
-            @click="getCategories"
+          <el-button class="add-root-button" @click="getCategories"
             >刷新[分类排序]</el-button
           >
         </el-button-group>
@@ -118,9 +105,6 @@
         <el-select
           v-model="categorySeletionItem"
           placeholder="选择分类"
-          clearable
-          filterable
-          size="small"
           style="margin: 10px"
         >
           <el-option
@@ -132,7 +116,6 @@
           </el-option>
         </el-select>
         <el-button
-          size="small"
           style="width: calc(100% + 4px); border-bottom: none"
           @click="transferCateArticle"
           >确认迁移</el-button

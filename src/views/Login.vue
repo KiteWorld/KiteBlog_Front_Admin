@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="login-form-container">
+    <div class="login-form-container" @keyup.enter="submit">
       <img src="../assets/logo.png" alt="" class="logo" />
       <el-form
         :model="loginForm"
@@ -8,24 +8,21 @@
         :rules="rules"
         label-width="100px"
         :inline="false"
-        size="small"
         class="login-form"
       >
-        <el-form-item label="UserName：" prop="name">
-          <el-input v-model="loginForm.name" clearable></el-input>
+        <el-form-item label="jobNo：" prop="jobNo">
+          <el-input v-model="loginForm.jobNo"></el-input>
         </el-form-item>
         <el-form-item label="Password：" prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submit">登录</el-button>
-          <el-button @click="reset">重置</el-button>
+          <el-input v-model="loginForm.password" type="password"></el-input>
         </el-form-item>
       </el-form>
+      <div class="footer">
+        <el-button type="primary" :plain="false" @click="submit"
+          >登录</el-button
+        >
+        <el-button @click="reset">重置</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -38,11 +35,11 @@ export default {
   data() {
     return {
       loginForm: {
-        name: null,
+        jobNo: null,
         password: null,
       },
       rules: {
-        name: [
+        jobNo: [
           {
             required: true,
             min: 6,
@@ -73,9 +70,10 @@ export default {
           if (res.code !== 0) {
             this.$message.error(res.msg);
           } else {
-            Cookies.set("token", res.data.token);
+            Cookies.set("token", res.data.token, { expires: 1 });
             Cookies.set("name", res.data.name);
-            Cookies.set("userId", res.data.userId);
+            Cookies.set("userId", res.data.userId || "");
+            Cookies.set("role", res.data.role);
             this.$router.replace({ path: "/" });
           }
         }
@@ -96,15 +94,18 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
   .login-form-container {
     position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgb(196, 196, 196);
     width: 300px;
-    height: 180px;
+    height: 200px;
     padding: 20px;
     .logo {
       position: absolute;

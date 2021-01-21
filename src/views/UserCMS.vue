@@ -3,12 +3,8 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="showUserDialog()"
-            >新增</el-button
-          >
-          <el-button plain size="small" @click="deleteCMSUser()"
-            >删除</el-button
-          >
+          <el-button @click="showUserDialog()">新增</el-button>
+          <el-button @click="deleteCMSUser()">删除</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -17,18 +13,13 @@
             slot="main"
             v-model="searchData.userName"
             placeholder="用户名称"
-            size="small"
-            clearable
           ></el-input>
           <div class="search-item" slot="sub">
             <span class="search-label">角色：</span>
             <el-select
               v-model="searchData.userRole"
               placeholder="请选择"
-              clearable
-              filterable
               style="width: 100%"
-              size="small"
             >
               <el-option
                 v-for="(value, name) in CMS_USER_ROLE"
@@ -45,8 +36,8 @@
             <el-date-picker
               type="datetimerange"
               v-model="searchData.createDate"
-              size="small"
               style="width: 100%"
+              size="small"
               value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
@@ -68,9 +59,17 @@
         :inline="false"
         size="samll"
       >
+        <el-form-item label="工号：" prop="jobNo">
+          <el-input
+            v-model="set_user.data.jobNo"
+            placeholder="无法获取工号，请重新打开窗口重试"
+            style="width: 400px"
+            disabled
+          >
+          </el-input>
+        </el-form-item>
         <el-form-item label="用户名：" prop="userName">
           <el-input
-            size="small"
             v-model="set_user.data.userName"
             placeholder="请输入"
             style="width: 400px"
@@ -79,7 +78,6 @@
         </el-form-item>
         <el-form-item label="密码：" prop="password">
           <el-input
-            size="small"
             v-model="set_user.data.password"
             placeholder="请输入"
             type="password"
@@ -89,7 +87,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="角色类型:" prop="userRole">
-          <el-radio-group v-model="set_user.data.userRole" size="mini">
+          <el-radio-group v-model="set_user.data.userRole" @change="changeRole">
             <el-radio
               :label="key"
               :key="key"
@@ -103,14 +101,11 @@
         <el-form-item label="关联ToC用户:">
           <el-select
             v-model="set_user.data.ToCUserId"
-            filterable
             remote
-            clearable
             reserve-keyword
             placeholder="请输入用户名搜索（需要先选择角色类型）"
             :remote-method="searchUser"
             :loading="set_user.loading"
-            size="small"
             style="width: 400px"
           >
             <el-option
@@ -131,10 +126,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" @click="set_user.visible = false"
-          >取 消</el-button
-        >
-        <el-button size="small" type="primary" @click="saveUser"
+        <el-button @click="set_user.visible = false">取 消</el-button>
+        <el-button type="primary" :plain="false" @click="saveUser"
           >确 定</el-button
         >
       </span>
@@ -148,8 +141,9 @@ import {
   queryAllUsersList,
   queryCMSUserById,
   saveCMSUser,
+  queryJobNoMax,
 } from "../api/api";
-import { userName, password, userRole } from "@/common/rules";
+import { userName, password, userRole, jobNo } from "@/common/rules";
 import { CMS_USER_ROLE } from "../common/eum";
 import Cookies from "js-cookie";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
@@ -179,9 +173,10 @@ export default {
           CMSUserId: null,
           userName: null,
           password: null,
-          userRole: null,
+          userRole: "visitor",
           ToCUserId: null,
           avatar: null,
+          jobNo: null,
         },
         tocUserList: [], //嵌套太深，可以用 push 或者 this.$set() 来刷新列表。嫌麻烦的话，可以直接写在 data 里面 。为了照顾萌新（我也是萌新，所以深知萌新的痛苦），我这里演示一下。
         uploadProps: {
@@ -210,6 +205,7 @@ export default {
           label: "角色",
           formatter: (row, column, cellValue) => CMS_USER_ROLE[cellValue], //加index eslint报错
         },
+        { prop: "jobNo", label: "工号" },
         { prop: "ToCUserName", label: "关联的ToC用户" },
         {
           prop: "avatar",
@@ -249,7 +245,7 @@ export default {
   async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.userDateInit = JSON.parse(JSON.stringify(this.set_user.data));
-    this.rules = { userName, password, userRole };
+    this.rules = { userName, password, userRole, jobNo };
     this.CMS_USER_ROLE = CMS_USER_ROLE;
   },
   methods: {
@@ -290,6 +286,7 @@ export default {
         if (res.code !== 0) {
           return this.$message.error("获取用户信息失败！");
         }
+        set.title = "修改ToC用户信息";
         set.data = Object.assign(set.data, res.data);
         if (set.data.ToCUserId) {
           this.tocUserList = [
@@ -301,8 +298,19 @@ export default {
         }
       } else {
         set.data = Object.assign(set.data, this.userDateInit);
+        set.data.jobNo = (await queryJobNoMax()).data.jobNo;
       }
       set.visible = true;
+    },
+    async changeRole(role) {
+      const user = this.set_user.data;
+      if (!user.CMSUserId) {
+        if (role === "superadmin") {
+          user.jobNo = (await queryJobNoMax({ userRole: role })).data.jobNo;
+        } else {
+          user.jobNo = (await queryJobNoMax()).data.jobNo;
+        }
+      }
     },
     saveUser() {
       this.$refs.UserForm.validate(async (valid) => {

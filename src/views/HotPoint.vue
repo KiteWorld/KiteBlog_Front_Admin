@@ -3,22 +3,12 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="search()">刷新</el-button>
-          <el-button plain size="small" @click="deleteHotPoint()"
-            >删除（数据库中移除）</el-button
-          >
-          <el-button plain size="small" v-popover:statusPopover
-            >修改状态</el-button
-          >
-          <el-button plain size="small" v-popover:catPopover
-            >修改分类</el-button
-          >
-          <el-button plain size="small" v-popover:recommendPopover
-            >推荐设置</el-button
-          >
-          <el-button plain size="small" @click="addHotPoint"
-            >新增沸点</el-button
-          >
+          <el-button @click="search()">刷新</el-button>
+          <el-button @click="deleteHotPoint()">删除（数据库中移除）</el-button>
+          <el-button v-popover:statusPopover>修改状态</el-button>
+          <el-button v-popover:catPopover>修改分类</el-button>
+          <el-button v-popover:recommendPopover>推荐设置</el-button>
+          <el-button @click="addHotPoint">新增沸点</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -27,17 +17,12 @@
             slot="main"
             v-model="searchData.hotPointContent"
             placeholder="沸点内容"
-            size="small"
-            clearable
           ></el-input>
           <div class="search-item" slot="sub">
             <span class="search-label">分类：</span>
             <el-select
               v-model="searchData.categoryId"
               placeholder="请选择"
-              clearable
-              filterable
-              size="small"
               style="width: 100%"
             >
               <el-option
@@ -54,8 +39,6 @@
             <el-input
               v-model="searchData.userName"
               placeholder="请输入"
-              size="small"
-              clearable
             ></el-input>
           </div>
           <div class="search-item" slot="sub">
@@ -63,10 +46,7 @@
             <el-select
               v-model="searchData.hotPointStatus"
               placeholder="请选择"
-              clearable
-              filterable
               style="width: 100%"
-              size="small"
             >
               <el-option
                 v-for="(value, name) in HOTPOINT_STATUS"
@@ -83,8 +63,8 @@
             <el-date-picker
               type="datetimerange"
               v-model="searchData.createDate"
-              size="small"
               style="width: 100%"
+              size="small"
               value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
@@ -107,10 +87,7 @@
         <el-select
           v-model="set_reject.data.rejectRemark"
           placeholder="选择模板"
-          clearable
-          filterable
           @change="changeTemplate"
-          size="small"
           style="width: 100%"
         >
           <el-option
@@ -121,7 +98,7 @@
           >
           </el-option>
         </el-select>
-        <el-button size="small">使用模板</el-button>
+        <el-button>使用模板</el-button>
       </div>
       <el-input
         type="textarea"
@@ -169,9 +146,6 @@
       <el-select
         v-model="categorySeletionItem"
         placeholder="选择分类"
-        clearable
-        filterable
-        size="small"
         style="margin: 10px"
       >
         <el-option
@@ -183,7 +157,6 @@
         </el-option>
       </el-select>
       <el-button
-        size="small"
         @click="updateHotPointCat"
         style="width: calc(100% + 4px); border-bottom: none"
         >保存修改</el-button

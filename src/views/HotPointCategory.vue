@@ -3,13 +3,9 @@
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
-          <el-button plain size="small" @click="addCat">添加分类</el-button>
-          <el-button plain size="small" v-popover:catPopover
-            >分类沸点迁移</el-button
-          >
-          <el-button plain size="small" @click="getHotPointCategories"
-            >刷新排序</el-button
-          >
+          <el-button @click="addCat">添加分类</el-button>
+          <el-button v-popover:catPopover>分类沸点迁移</el-button>
+          <el-button @click="getHotPointCategories">刷新排序</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -18,8 +14,6 @@
             slot="main"
             v-model="searchData.categoryName"
             placeholder="请输入类名"
-            size="small"
-            clearable
           ></el-input>
         </SearchInput>
       </el-col>
@@ -47,9 +41,6 @@
       <el-select
         v-model="categorySeletionItem"
         placeholder="选择分类"
-        clearable
-        filterable
-        size="small"
         style="margin: 10px"
       >
         <el-option
@@ -61,7 +52,6 @@
         </el-option>
       </el-select>
       <el-button
-        size="small"
         @click="transferHotPoint"
         style="width: calc(100% + 4px); border-bottom: none"
         >确认迁移</el-button
@@ -77,13 +67,11 @@
         :model="set_add.data"
         ref="addCatForm"
         label-width="120px"
-        size="small"
       >
         <el-form-item label="类名：">
           <el-input
             v-model="set_add.data.categoryName"
-            size="small"
-            style="width: 100%"
+                style="width: 100%"
           ></el-input>
         </el-form-item>
         <el-form-item label="是否显示：">
@@ -97,8 +85,7 @@
         <el-form-item label="分类显示顺序：">
           <el-input-number
             v-model="set_add.data.categoryOrder"
-            size="small"
-            :min="1"
+                :min="1"
           ></el-input-number>
         </el-form-item>
       </el-form>

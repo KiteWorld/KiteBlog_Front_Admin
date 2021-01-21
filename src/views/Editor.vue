@@ -15,9 +15,6 @@
       <el-select
         v-model="categoryId"
         placeholder="选择分类"
-        clearable
-        filterable
-        size="small"
         style="margin-left: 20px"
       >
         <el-option
@@ -31,9 +28,6 @@
       <el-select
         v-model="recommendType"
         placeholder="选择推荐分类"
-        clearable
-        filterable
-        size="small"
         style="margin-left: 5px"
         v-show="type !== 'template'"
       >
@@ -49,13 +43,13 @@
       <el-button-group>
         <el-button
           type="primary"
-          size="small"
           style="margin-left: 4px"
+          :plain="false"
           @click="saveContent"
           v-popover:routerPopover
           >{{ saveBtnText }}</el-button
         >
-        <el-button size="small" @click="clearEditor">新建</el-button>
+        <el-button @click="clearEditor">新建</el-button>
       </el-button-group>
     </div>
     <div class="editor-main">
@@ -63,7 +57,6 @@
         v-model="article.title"
         placeholder="标题"
         size="normal"
-        clearable
         style="margin-bottom: 2px"
         v-show="type == 'article'"
       ></el-input>
@@ -71,7 +64,6 @@
         v-model="template.title"
         placeholder="标题"
         size="normal"
-        clearable
         style="margin-bottom: 2px"
         v-show="type == 'template'"
       ></el-input>
@@ -154,7 +146,7 @@ export default {
         categoryId: null,
         userId: null,
         type: null,
-        status: null,
+        status: "pending",
         articleId: null,
       },
       hotPoint: {
@@ -172,7 +164,7 @@ export default {
         categoryId: null,
         userId: null,
         type: null,
-        status: null,
+        status: "pending",
         articleId: null,
       },
       categoryId: null,
@@ -186,6 +178,7 @@ export default {
       refreshKey1: 1,
       refreshKey2: -1,
       routerPopoverVisible: false,
+      messageHtml: "",
     };
   },
   computed: {
@@ -217,7 +210,45 @@ export default {
     await this.getCategoriesList();
     this.categoryId = res.data ? res.data.categoryId : null;
   },
-  mounted() {},
+  mounted() {
+    if (!Cookies.get("userId")) {
+      const h = this.$createElement;
+      const dom = [
+        h(
+          "p",
+          `你的账号还没有关联前台账号（ToC用户）,将无法保存编辑的文章。${
+            Cookies.get("role") !== "superadmin"
+              ? "请联系「超级管理员」进行配置"
+              : ""
+          }`
+        ),
+      ];
+      if (Cookies.get("role") === "superadmin") {
+        dom.push(
+          h(
+            "a",
+            {
+              class: "router",
+              on: {
+                click: () => {
+                  this.notifyInstance.close();
+                  this.$router.push({ path: "/user/user_cms" });
+                },
+              },
+            },
+            "跳转到「用户管理」"
+          )
+        );
+      }
+      this.notifyInstance = this.$notify({
+        title: "提示",
+        duration: 15000,
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+        message: h("div", {}, dom),
+      });
+    }
+  },
   methods: {
     async changeContent() {
       this.categoryId = null;
@@ -238,6 +269,11 @@ export default {
     },
 
     async saveContent() {
+      if (!Cookies.get("userId")) {
+        return this.$message.warning(
+          "你的账号还没有关联前台账号（ToC用户）,无法保存编辑的文章,请联系超级管理员进行配置"
+        );
+      }
       let res = null;
       switch (this.type) {
         case "article":
@@ -375,5 +411,16 @@ export default {
 }
 /deep/.CodeMirror {
   height: 450px;
+}
+.router {
+  text-decoration: none;
+  display: block;
+  margin: 0 auto;
+  width: 70%;
+  color: #fff;
+  padding: 5px;
+  text-align: center;
+  background: #409eff;
+  border-radius: 3px;
 }
 </style>

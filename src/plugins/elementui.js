@@ -164,3 +164,15 @@ Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$prompt = MessageBox.prompt;
 Vue.prototype.$notify = Notification;
 Vue.prototype.$message = Message;
+
+
+// ElementUI 全局配置，设置默认样式。会被覆盖
+Dialog.props.closeOnClickModal.default = false
+Input.props.size.default = "small"
+Input.props.clearable.default = true
+Button.props.size.default = "small"
+Button.props.plain.default = true
+Select.props.filterable.default = true
+Select.props.clearable.default = true
+Select.props.size.default = "small"
+RadioGroup.props.size.default = "mini"

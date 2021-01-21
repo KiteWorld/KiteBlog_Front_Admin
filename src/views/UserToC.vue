@@ -4,11 +4,9 @@
       <el-col :span="12" :offset="0">
         <el-button-group style="margin-bottom: 5px">
           <!-- 要写成 showUserDialog()，简写成 showUserDialog 会默认接收一个 事件点击对象（MouseEvent）作为参数  -->
-          <el-button plain size="small" @click="showUserDialog()"
-            >新增</el-button
-          >
-          <el-button v-popover:popover plain size="small">修改状态</el-button>
-          <el-button plain size="small" @click="delUsers()">删除</el-button>
+          <el-button @click="showUserDialog()">新增</el-button>
+          <el-button v-popover:popover>修改状态</el-button>
+          <el-button @click="delUsers()">删除</el-button>
         </el-button-group>
       </el-col>
       <el-col :span="12" :offset="0">
@@ -17,18 +15,13 @@
             slot="main"
             v-model="searchData.userName"
             placeholder="用户名称"
-            size="small"
-            clearable
           ></el-input>
           <div class="search-item" slot="sub">
             <span class="search-label">角色：</span>
             <el-select
               v-model="searchData.userRole"
               placeholder="请选择"
-              clearable
-              filterable
               style="width: 100%"
-              size="small"
             >
               <el-option
                 v-for="(value, name) in TOC_USER_ROLE"
@@ -46,10 +39,7 @@
             <el-select
               v-model="searchData.userStatus"
               placeholder="请选择"
-              clearable
-              filterable
               style="width: 100%"
-              size="small"
             >
               <el-option
                 v-for="(value, name) in USER_STATUS"
@@ -66,10 +56,7 @@
             <el-select
               v-model="searchData.userSex"
               placeholder="请选择"
-              clearable
-              filterable
               style="width: 100%"
-              size="small"
             >
               <el-option
                 v-for="(value, name) in USER_SEX"
@@ -86,8 +73,8 @@
             <el-date-picker
               type="datetimerange"
               v-model="searchData.createDate"
-              size="small"
               style="width: 100%"
+              size="small"
               value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
@@ -126,11 +113,9 @@
         :rules="rules"
         label-width="100px"
         :inline="false"
-        size="samll"
       >
         <el-form-item label="用户名：" prop="userName">
           <el-input
-            size="small"
             v-model="set_user.data.userName"
             placeholder="请输入"
             style="width: 400px"
@@ -139,7 +124,6 @@
         </el-form-item>
         <el-form-item label="密码：" prop="password">
           <el-input
-            size="small"
             v-model="set_user.data.password"
             placeholder="请输入"
             type="password"
@@ -148,8 +132,26 @@
           >
           </el-input>
         </el-form-item>
+        <el-form-item label="邮箱：" prop="email">
+          <el-input
+            v-model="set_user.data.email"
+            placeholder="请输入(邮箱、手机可以二选一)"
+            type="email"
+            style="width: 400px"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="手机号码：" max-length="11" prop="phone">
+          <el-input
+            v-model="set_user.data.phone"
+            placeholder="请输入(邮箱、手机可以二选一)"
+            type="tel"
+            style="width: 400px"
+          >
+          </el-input>
+        </el-form-item>
         <el-form-item label="角色类型:" prop="userRole">
-          <el-radio-group v-model="set_user.data.userRole" size="mini">
+          <el-radio-group v-model="set_user.data.userRole">
             <el-radio
               :label="key"
               :key="key"
@@ -160,7 +162,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="状态：" prop="userStatus">
-          <el-radio-group v-model="set_user.data.userStatus" size="mini">
+          <el-radio-group v-model="set_user.data.userStatus">
             <el-radio
               :label="Number(key)"
               :key="key"
@@ -171,10 +173,14 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="性别：" prop="userSex">
-          <el-radio-group v-model="set_user.data.userSex" size="mini">
-            <el-radio :label="0" border>未知</el-radio>
-            <el-radio :label="1" border>男</el-radio>
-            <el-radio :label="2" border>女</el-radio>
+          <el-radio-group v-model="set_user.data.userSex">
+            <el-radio
+              :label="Number(key)"
+              :key="key"
+              border
+              v-for="(value, key) in USER_SEX"
+              >{{ value }}</el-radio
+            >
           </el-radio-group>
         </el-form-item>
         <el-form-item label="上传头像：">
@@ -186,10 +192,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" @click="set_user.visible = false"
-          >取 消</el-button
-        >
-        <el-button size="small" type="primary" @click="saveUser"
+        <el-button @click="set_user.visible = false">取 消</el-button>
+        <el-button type="primary" :plain="false" @click="saveUser"
           >确 定</el-button
         >
       </span>
@@ -217,6 +221,8 @@ import {
   userRole,
   userStatus,
   userSex,
+  email,
+  phone,
 } from "@/common/rules";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 import Cookies from "js-cookie";
@@ -250,12 +256,15 @@ export default {
         visible: false,
         loading: false,
         data: {
+          userId: null,
           userName: null,
           password: null,
-          userRole: null,
+          userRole: "tocms",
           userStatus: 0,
           avatar: null,
           userSex: 0,
+          email: null,
+          phone: null,
         },
         tocUserList: [], //嵌套太深，可以用 push 或者 this.$set() 来刷新列表。嫌麻烦的话，可以直接写在 data 里面 。为了照顾萌新（我也是萌新，所以深知萌新的痛苦），我这里演示一下。
         uploadProps: {
@@ -298,11 +307,14 @@ export default {
             );
           },
         },
+        { prop: "email", label: "邮箱" },
+        { prop: "phone", label: "手机号码" },
         {
           prop: "userSex",
           label: "性别",
           formatter: (row, column, cellValue) => USER_SEX[cellValue],
         },
+
         {
           prop: "avatar",
           label: "头像",
@@ -338,10 +350,35 @@ export default {
       ],
     };
   },
+  watch: {
+    //邮箱、手机 必填二选一
+    "set_user.data.email"(newOld) {
+      if (newOld) {
+        this.rules.phone[0].required = false;
+      } else {
+        this.rules.phone[0].required = true;
+      }
+    },
+    "set_user.data.phone"(newOld) {
+      if (newOld) {
+        this.rules.email[0].required = false;
+      } else {
+        this.rules.email[0].required = true;
+      }
+    },
+  },
   async created() {
     this.searchDataBackUp = JSON.parse(JSON.stringify(this.searchData));
     this.userDateInit = JSON.parse(JSON.stringify(this.set_user.data));
-    this.rules = { userName, password, userRole, userStatus, userSex };
+    this.rules = {
+      userName,
+      password,
+      userRole,
+      userStatus,
+      userSex,
+      email,
+      phone,
+    };
     this.USER_STATUS = USER_STATUS;
     this.TOC_USER_ROLE = TOC_USER_ROLE;
     this.USER_SEX = USER_SEX;
@@ -372,9 +409,12 @@ export default {
         if (res.code !== 0) {
           return this.$message.error("获取用户信息失败！");
         }
+        set.title = "修改CMS用户信息";
         set.data = Object.assign(set.data, res.data);
-        console.log(set.data);
       } else {
+        if (this.$refs.UserForm) {
+          this.$refs.UserForm.resetFields(); //清除检验结果（校验显示的文字）
+        }
         set.data = Object.assign(set.data, this.userDateInit);
       }
       set.visible = true;

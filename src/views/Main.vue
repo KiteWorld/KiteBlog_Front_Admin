@@ -87,6 +87,8 @@ export default {
     logout() {
       Cookies.remove("name");
       Cookies.remove("token");
+      Cookies.remove("role");
+      Cookies.remove("userId");
       this.$store.dispatch("permission/addRouterList", []);
       this.$router.push({ name: "Login" });
     },

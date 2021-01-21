@@ -35,8 +35,51 @@ export const userStatus = [{
 	message: "请选择状态",
 	trigger: "change",
 }]
+
 export const userSex = [{
 	required: true,
 	message: "请选择性别",
 	trigger: "change",
+}]
+
+export const jobNo = [{
+	required: true,
+	message: "请选择性别",
+	trigger: "blur",
+}, {
+	min: 6,
+	max: 16,
+	message: "长度在 6 到 16 个字符",
+	trigger: "blur",
+}, ]
+
+export const email = [{
+		required: true,
+		message: '请输入邮箱地址',
+		trigger: 'blur'
+	},
+	{
+		type: 'email',
+		message: '请输入正确的邮箱地址',
+		trigger: ['blur', 'change']
+	}
+]
+
+export const phone = [{
+	required: true,
+	message: '请输入手机号码',
+	trigger: 'blur'
+}, {
+
+	validator: function (rule, value, callback) {
+		if (!value) {
+			callback()
+		}
+		if (!/^1\d{10}$/.test(value)) {
+			callback(new Error('手机号格式错误'))
+		} else {
+			callback()
+		}
+	},
+	trigger: ['blur', 'change']
 }]

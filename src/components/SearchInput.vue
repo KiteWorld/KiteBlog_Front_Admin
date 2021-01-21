@@ -20,7 +20,7 @@
       </transition>
     </div>
     <el-button-group style="margin-left: 4px">
-      <el-button type="primary" size="small" @click="onSearch">搜索</el-button>
+      <el-button type="primary" :plain="false" size="small" @click="onSearch">搜索</el-button>
       <el-button size="small" @click="onReset">重置</el-button>
     </el-button-group>
   </div>
