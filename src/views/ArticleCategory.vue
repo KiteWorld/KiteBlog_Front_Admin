@@ -39,8 +39,9 @@
               size="mini"
               style="width: 250px"
               maxlength="50"
+              @click.native.stop=""
             ></el-input>
-            <div class="cat-button-container">
+            <div class="cat-button-container" @click.stop="">
               <el-switch
                 v-model="data.categoryStatus"
                 active-text="显示"
@@ -247,7 +248,7 @@ export default {
       }
       const parent = node.parent;
       const children = parent.data.children || parent.data;
-      const index = children.findIndex((d) => d.categoryId === data.categoryId);
+      const index = children.findIndex((d) => d == data);
       children.splice(index, 1);
       this.$message.success("删除成功");
     },
