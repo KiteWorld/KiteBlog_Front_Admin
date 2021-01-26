@@ -176,3 +176,4 @@ Select.props.filterable.default = true
 Select.props.clearable.default = true
 Select.props.size.default = "small"
 RadioGroup.props.size.default = "mini"
+Radio.props.border.default = true

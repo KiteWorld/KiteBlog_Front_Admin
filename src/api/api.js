@@ -17,6 +17,21 @@ export function queryRouter(params) {
 	})
 }
 
+export function deleteRouter(params) {
+	const url = `router/deleteRouter`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
+export function saveRouter(params) {
+	const url = `router/saveRouter`;
+	return axios.post(url, params).then((res) => {
+		return Promise.resolve(res.data)
+	})
+}
+
+
 //--------------ToC用户-----------------
 export function getUser(params) {
 	const url = `users/queryUser`;

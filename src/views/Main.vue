@@ -80,6 +80,7 @@ export default {
       return this.$store.state.permission.routerList;
     },
     key() {
+      console.log(this.$route.path)
       return this.$route.path;
     },
   },

@@ -1,6 +1,7 @@
 import {
 	ADD_ROUTER_LIST,
-	UPDATE_ROLE
+	UPDATE_ROLE,
+	ADD_ROUTER_ITEM
 } from "../mutation_type"
 
 const state = {
@@ -14,6 +15,9 @@ const mutations = {
 	},
 	[UPDATE_ROLE]: (state, role) => {
 		state.role = role
+	},
+	[ADD_ROUTER_ITEM]: (state, routerItem) => {
+		state.routerList = routerItem
 	}
 }
 
@@ -27,6 +31,11 @@ const actions = {
 		commit
 	}, role) {
 		commit("UPDATE_ROLE", role)
+	},
+	addRouterItem({
+		commit
+	}, routerItem) {
+		commit("ADD_ROUTER_ITEM", routerItem)
 	}
 }
 
