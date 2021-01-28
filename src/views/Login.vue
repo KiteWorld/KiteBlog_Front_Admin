@@ -6,14 +6,14 @@
         :model="loginForm"
         ref="form"
         :rules="rules"
-        label-width="100px"
+        label-width="80px"
         :inline="false"
         class="login-form"
       >
-        <el-form-item label="jobNo：" prop="jobNo">
+        <el-form-item label="工号：" prop="jobNo">
           <el-input v-model="loginForm.jobNo"></el-input>
         </el-form-item>
-        <el-form-item label="Password：" prop="password">
+        <el-form-item label="密码：" prop="password">
           <el-input v-model="loginForm.password" type="password"></el-input>
         </el-form-item>
       </el-form>
@@ -110,12 +110,12 @@ export default {
     .logo {
       position: absolute;
       top: 0;
-      background-color: rgba(255, 255, 255, 0.823);
+      background-color: #fff;
       transform: translateY(-60%);
       width: 110px;
       height: 110px;
       border-radius: 50%;
-      box-shadow: 0px 0px 10px rgb(196, 196, 196);
+      box-shadow: 0px 0px 10px rgb(223, 223, 223);
     }
     .login-form {
       margin-top: 50px;

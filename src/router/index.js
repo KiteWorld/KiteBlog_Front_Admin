@@ -1,11 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import NProgress from 'nprogress' // progress bar
+import 'nprogress/nprogress.css' // progress bar style
 import Cookies from 'js-cookie'
 import store from '@/store'
 import {
   queryRouter
 } from "@/api/api";
 import Main from '@/views/Main'
+
+
+NProgress.configure({
+  showSpinner: false
+}) // NProgress Configuration
 
 Vue.use(VueRouter)
 
@@ -51,11 +58,13 @@ const getRoutes = (routerList) => {
 }
 
 router.beforeEach(async (to, from, next) => {
+  NProgress.start()
   if (Cookies.get('token')) {
     if (to.path === '/adminLogin') {
       next({
         path: '/'
       })
+      NProgress.done()
     } else {
       if (store.state.permission.routerList.length !== 0) {
         next()
@@ -92,8 +101,12 @@ router.beforeEach(async (to, from, next) => {
       next({
         name: "Login"
       })
+      NProgress.done()
     }
   }
 })
 
+router.afterEach(() => {
+  NProgress.done()
+})
 export default router

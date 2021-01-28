@@ -75,10 +75,7 @@
           >
             <el-form-item label="是否为外链：" prop="meta.isExternal">
               <!-- 字段 noCache 为「不缓存」的意思，取反才对  -->
-              <el-radio-group
-                v-model="currentRouterData.meta.isExternal"
-                @change="changeIsExternal"
-              >
+              <el-radio-group v-model="currentRouterData.meta.isExternal">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
               </el-radio-group>
@@ -89,7 +86,12 @@
                 placeholder="导航栏菜单显示的名称"
               ></el-input>
             </el-form-item>
-            <el-form-item label="路由名称(routerName)：" prop="name">
+            <!-- 考虑到表单检验方便，加上嵌套的 DOM 节点不多,对性能影响不大， 所以用v-if  -->
+            <el-form-item
+              label="路由名称(routerName)："
+              prop="name"
+              v-show="!currentRouterData.meta.isExternal"
+            >
               <el-input
                 v-model="currentRouterData.name"
                 placeholder="请确保名字的唯一性，只支持英文字母和数字"
@@ -97,7 +99,7 @@
             </el-form-item>
             <el-form-item
               label="路由路径(path)："
-              v-if="!currentRouterData.meta.isExternal"
+              v-show="!currentRouterData.meta.isExternal"
               prop="path"
             >
               <el-input
@@ -109,14 +111,22 @@
                 }}</template>
               </el-input>
             </el-form-item>
-            <el-form-item label="外链路径(path)：" prop="path" v-else>
+            <el-form-item
+              label="外链路径(path)："
+              prop="path"
+              v-show="currentRouterData.meta.isExternal"
+            >
               <el-input
                 v-model="currentRouterData.path"
                 placeholder="外链即不属于本站的路由地址。例如：https://kite1874.com"
               >
               </el-input>
             </el-form-item>
-            <el-form-item label="组件名称(component)" prop="component">
+            <el-form-item
+              label="组件名称(component)"
+              prop="component"
+              v-show="!currentRouterData.meta.isExternal"
+            >
               <el-input
                 v-model="currentRouterData.component"
                 placeholder="如果存在下级路由，主键必须为 Main ，否则无法添加下级路由"
@@ -175,13 +185,21 @@
                 >
               </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="固定页签：" prop="meta.isAffix">
+            <el-form-item
+              label="固定页签："
+              prop="meta.isAffix"
+              v-show="!currentRouterData.meta.isExternal"
+            >
               <el-radio-group v-model="currentRouterData.meta.isAffix">
                 <el-radio :label="true">是</el-radio>
                 <el-radio :label="false">否</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="缓存：" prop="meta.noCache">
+            <el-form-item
+              label="缓存："
+              prop="meta.noCache"
+              v-show="!currentRouterData.meta.isExternal"
+            >
               <!-- 字段 noCache 为「不缓存」的意思，取反才对  -->
               <el-radio-group v-model="currentRouterData.meta.noCache">
                 <el-radio :label="false">是</el-radio>
@@ -304,6 +322,21 @@ export default {
     filterText(val) {
       this.$refs.routerTree.filter(val);
     },
+    "currentRouterData.meta.isExternal"(val) {
+      if (val) {
+        this.rules.path = externalLink;
+        this.rules.name = [];
+        this.rules.component = [];
+        this.rules["meta.isAffix"] = [];
+        this.rules["meta.noCache"] = [];
+      } else {
+        this.rules.path = isNumLetter("请填写路由路径");
+        this.rules.name = isNumLetter("请填写路由名称");
+        this.rules.component = isNumLetter("请填写组件名称");
+        this.rules["meta.isAffix"] = change("请选择是否固定页签");
+        this.rules["meta.noCache"] = change("请选择是否缓存");
+      }
+    },
   },
   created() {
     this.routerList = JSON.parse(
@@ -315,7 +348,7 @@ export default {
     );
     this.CMS_USER_ROLE = CMS_USER_ROLE;
     this.rules = {
-      "meta.isExternal": change("请选择页面是否缓存"),
+      "meta.isExternal": change("请选择是否为外链"),
       "meta.isAffix": change("请选择是否固定页签"),
       "meta.noCache": change("请选择是否缓存"),
       "meta.target": change("请选择打开方式"),
@@ -386,18 +419,22 @@ export default {
     saveRouter() {
       this.$refs.routerForm.validate(async (valid) => {
         if (valid) {
-          let res = await saveRouter(this.currentRouterData);
+          const data = this.currentRouterData;
+          if (data.meta.isExternal) {
+            data.name = null;
+            data.component = "Main";
+            data.meta.noCache = true;
+            data.meta.isAffix = false;
+          }
+          let res = await saveRouter(data);
           if (res.code !== 0) {
             return this.$message.warning(res.msg);
           }
-          if (!this.currentRouterData.meta.routerId) {
-            this.currentRouterData.meta.routerId = res.data.routerId;
+          if (!data.meta.routerId) {
+            data.meta.routerId = res.data.routerId;
           }
-          this.currentRouterData.title = this.currentRouterData.meta.title;
-          this.sourceRouterData = Object.assign(
-            this.sourceRouterData,
-            this.currentRouterData
-          );
+          data.title = data.meta.title;
+          this.sourceRouterData = Object.assign(this.sourceRouterData, data);
           this.$message.success(
             res.msg + ",刷新页面查看最新导航栏。刷新后未保存的路由将丢失!"
           );
@@ -586,10 +623,5 @@ export default {
     font-size: 12px;
     margin-left: 20px;
   }
-}
-
-/deep/.el-checkbox,
-/deep/ .el-radio {
-  margin-right: 0;
 }
 </style>

@@ -268,7 +268,7 @@ export default {
         },
         tocUserList: [], //嵌套太深，可以用 push 或者 this.$set() 来刷新列表。嫌麻烦的话，可以直接写在 data 里面 。为了照顾萌新（我也是萌新，所以深知萌新的痛苦），我这里演示一下。
         uploadProps: {
-          action: "http://localhost:1874/upload/uploadAvatar",
+          action: process.env.VUE_APP_API + "upload/uploadAvatar",
           headers: {
             Authorization: "Bearer " + Cookies.get("token"),
           },
