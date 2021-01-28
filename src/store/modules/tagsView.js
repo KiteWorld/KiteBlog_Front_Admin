@@ -1,6 +1,8 @@
 import {
 	ADD_VISITED_VIEW,
-	DEL_VISITED_VIEW
+	DEL_VISITED_VIEW,
+	DEL_ORTHERS_VIEW,
+	DEL_ALL_VIEW
 } from "../mutation_type"
 
 const state = {
@@ -23,7 +25,15 @@ const mutations = {
 			const cacheIndex = state.cachedViews.findIndex(i => i.path === view.path)
 			state.cachedViews.splice(cacheIndex, 1)
 		}
-	}
+	},
+	[DEL_ORTHERS_VIEW]: (state, view) => {
+		const visitedViews = state.visitedViews.filter(x => x.meta.isAffix || x.name === view.name)
+		state.visitedViews = visitedViews
+	},
+	[DEL_ALL_VIEW]: (state) => {
+		const visitedViews = state.visitedViews.filter(x => x.meta.isAffix)
+		state.visitedViews = visitedViews
+	},
 }
 
 const actions = {
@@ -36,6 +46,16 @@ const actions = {
 		commit
 	}, view) {
 		commit('DEL_VISITED_VIEW', view)
+	},
+	delOthersView({
+		commit
+	}, view) {
+		commit('DEL_ORTHERS_VIEW', view)
+	},
+	delAllView({
+		commit
+	}, view) {
+		commit('DEL_ALL_VIEW', view)
 	},
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="login-form-container" @keyup.enter="submit">
-      <img src="../assets/logo.png" alt="" class="logo" />
+      <img src="../assets/logo.png" alt="logo" class="logo" />
       <el-form
         :model="loginForm"
         ref="form"
@@ -80,7 +80,7 @@ export default {
       });
     },
     reset() {
-      this.loginForm.name = null;
+      this.loginForm.jobNo = null;
       this.loginForm.password = null;
     },
   },
