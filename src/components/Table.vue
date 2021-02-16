@@ -2,13 +2,17 @@
   <div class="table-container" ref="TableContainer">
     <el-table
       ref="baseTable"
-      :data="tableData"
       border
       style="width: 100%"
+      :data="tableData"
       :height="tableHeight"
       @selection-change="selectionChange"
+      v-bind="tableProps.sourceProps"
+      v-on="tableProps.events"
     >
-      <!-- v-bind="tableProps" -->
+      <!-- tableProps.sourceProps 支持 el-table 所以有属性，如果里面有data和height 会覆盖掉 :data="tableData"
+      和 :height="tableHeight"-->
+      <!-- tableProps.events 支持 el-table 所有方法，但不会覆盖原来的事件。 例如 @selection-change="selectionChange"-->
       <el-table-column
         align="center"
         prop="name"
@@ -17,7 +21,6 @@
         v-if="tableProps.selection"
       >
       </el-table-column>
-      <!-- <template v-for="(item, index) in columns" v-if="item.visable !== false"> -->
       <template v-for="(item, index) in columns">
         <el-table-column
           v-bind="Object.assign({}, columnsProp, item)"

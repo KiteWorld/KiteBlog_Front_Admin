@@ -197,6 +197,15 @@ export default {
         setting: {
           url: "users/queryCMSUser",
         },
+        sourceProps: {
+          stripe: true,
+        },
+        events: {
+          // el-table原来支持的组件都可以放在这里。
+          "selection-change": (selection) => {
+            console.log(selection);
+          },
+        },
       },
       columns: [
         { prop: "userName", label: "用户名" },
