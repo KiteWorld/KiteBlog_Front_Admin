@@ -1,6 +1,40 @@
 <template>
   <div class="container">
     <div class="login-form-container" @keyup.enter="submit">
+      <div class="tip">
+        <table>
+          <tr>
+            <th>角色</th>
+            <th>账号</th>
+            <th>密码</th>
+          </tr>
+          <tr>
+            <td>超级管理员</td>
+            <td>100000001</td>
+            <td>123123</td>
+          </tr>
+          <tr>
+            <td>普通管理员</td>
+            <td>000001</td>
+            <td>123123</td>
+          </tr>
+          <tr>
+            <td>审核员</td>
+            <td>000002</td>
+            <td>123123</td>
+          </tr>
+          <tr>
+            <td>编辑</td>
+            <td>000003</td>
+            <td>123123</td>
+          </tr>
+          <tr>
+            <td>游客</td>
+            <td>000004</td>
+            <td>123123</td>
+          </tr>
+        </table>
+      </div>
       <img src="../assets/logo.png" alt="logo" class="logo" />
       <el-form
         :model="loginForm"
@@ -13,7 +47,7 @@
         <el-form-item label="工号：" prop="jobNo">
           <el-input v-model="loginForm.jobNo"></el-input>
         </el-form-item>
-        <el-form-item label="密码：" prop="password">
+        <el-form-item label="密码" prop="password">
           <el-input v-model="loginForm.password" type="password"></el-input>
         </el-form-item>
       </el-form>
@@ -35,8 +69,8 @@ export default {
   data() {
     return {
       loginForm: {
-        jobNo: null,
-        password: null,
+        jobNo: "100000001",
+        password: "123123",
       },
       rules: {
         jobNo: [
@@ -63,6 +97,7 @@ export default {
   methods: {
     submit() {
       this.$refs.form.validate(async (valid) => {
+        console.log(valid);
         if (!valid) {
           return;
         } else {
@@ -80,8 +115,8 @@ export default {
       });
     },
     reset() {
-      this.loginForm.jobNo = null;
-      this.loginForm.password = null;
+      this.loginForm.jobNo = "100000001";
+      this.loginForm.password = "123123";
     },
   },
 };
@@ -107,6 +142,22 @@ export default {
     width: 300px;
     height: 200px;
     padding: 20px;
+    .tip {
+      position: absolute;
+      bottom: -180px;
+      line-height: 20px;
+      background: #fff;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgb(196, 196, 196);
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      list-style: none;
+      table {
+        width: 100%;
+        text-align: center;
+      }
+    }
     .logo {
       position: absolute;
       top: 0;

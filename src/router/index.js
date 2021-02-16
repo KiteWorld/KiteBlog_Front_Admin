@@ -71,18 +71,6 @@ router.beforeEach(async (to, from, next) => {
       } else {
         let routerList
         routerList = (await queryRouter()).data.dataList
-        // routerList.push({
-        //   path: 'http://baidu.com/',
-        //   component: Main,
-        //   children: [],
-        //   meta: {
-        //     isExternal: true,
-        //     level: 1,
-        //     icon: "el-icon-edit",
-        //     title: "外链",
-        //     target: '_blank'
-        //   }
-        // })
         await store.dispatch('permission/addRouterList', routerList)
         getRoutes(JSON.parse(JSON.stringify(routerList)))
         console.log(routerListResolve)
