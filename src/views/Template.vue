@@ -5,7 +5,6 @@
         <el-button-group style="margin-bottom: 5px">
           <el-button @click="deleteArticle()">删除</el-button>
           <el-button v-popover:catPopover>修改分类</el-button>
-
           <el-button @click="addTemplate">新增模板</el-button>
         </el-button-group>
       </el-col>

@@ -105,7 +105,7 @@ export default {
           if (res.code !== 0) {
             this.$message.error(res.msg);
           } else {
-            Cookies.set("token", res.data.token, { expires: 1 });
+            Cookies.set("token", res.data.token);
             Cookies.set("name", res.data.name);
             Cookies.set("userId", res.data.userId || "");
             Cookies.set("role", res.data.role);

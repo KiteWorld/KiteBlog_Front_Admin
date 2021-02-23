@@ -5,7 +5,7 @@ import Cookies from "js-cookie"
 
 axios.defaults.baseURL = process.env.VUE_APP_API
 
-axios.interceptors.request.use(function (config) {
+axios.interceptors.request.use((config) => {
 	NProgress.start()
 	if (config.url !== "auth/adminLogin") {
 		config.headers["authorization"] = `Bearer ${Cookies.get(
@@ -13,17 +13,23 @@ axios.interceptors.request.use(function (config) {
     )}`;
 	}
 	return config
-}, function (error) {
+}, (error) => {
 	console.log("error", error)
 	NProgress.done()
 	return Promise.reject(error);
 });
 
-axios.interceptors.response.use(function (response) {
+axios.interceptors.response.use((response) => {
 	NProgress.done()
 	return response;
-}, function (error) {
-	console.log("error", error)
+}, (error) => {
+	if (error.response.status === 401) {
+		Cookies.remove("token")
+		Cookies.remove("name")
+		Cookies.remove("userId")
+		Cookies.remove("role")
+		location.reload()
+	}
 	NProgress.done()
 	return Promise.reject(error);
 });
