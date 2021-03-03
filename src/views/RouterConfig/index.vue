@@ -253,15 +253,15 @@
 </template>
 
 <script>
-import { deleteRouter, saveRouter } from "../api/api";
-import { CMS_USER_ROLE } from "../common/eum";
+import { deleteRouter, saveRouter } from "@/api/api";
+import { CMS_USER_ROLE } from "@/common/eum";
 import {
   change,
   isNoEmpty,
   isNumLetter,
   externalLink,
   arrChange,
-} from "../common/rules";
+} from "@/common/rules";
 export default {
   name: "RouterConfig",
   data() {

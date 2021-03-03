@@ -134,7 +134,7 @@ import {
   updateCategory,
   getCategoriesList,
   transferCategory,
-} from "../api/api";
+} from "@/api/api";
 import { checkTableSelect } from "@/common/mixin";
 export default {
   name: "ArticleCategory",
@@ -215,6 +215,7 @@ export default {
       };
       this.categoryData.push(params);
     },
+    
     append(node, data) {
       const newChild = {
         categoryParentId: data.categoryId || 0,
@@ -231,10 +232,12 @@ export default {
       }
       data.children.push(newChild);
     },
+
     modify(data) {
       this.$set(data, "isEdit", true);
       this.$set(data, "categoryNameTemp", data.categoryName);
     },
+
     async remove(node, data) {
       if (data.children) {
         if (data.children.length != 0)
@@ -274,10 +277,12 @@ export default {
         this.$message.warning(res.msg);
       }
     },
+
     filterNode(value, data) {
       if (!value) return true;
       return data.categoryName.indexOf(value) !== -1;
     },
+
     showPopoverHandle() {
       this.catPopoverVisible = false;
       this.nodeKeys = this.$refs.catTree.getCheckedKeys();

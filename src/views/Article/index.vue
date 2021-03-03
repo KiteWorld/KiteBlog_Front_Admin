@@ -7,7 +7,6 @@
           <el-button @click="showRejectDailog()">驳回</el-button>
           <el-button @click="deleteArticle()">删除</el-button>
           <el-button v-popover:catPopover>修改分类</el-button>
-
           <el-button v-popover:recommendPopover>推荐设置</el-button>
           <el-button @click="addArticle">新增文章</el-button>
         </el-button-group>
@@ -231,7 +230,6 @@ export default {
             );
           },
         },
-
         {
           prop: "status",
           label: "状态",
@@ -277,7 +275,6 @@ export default {
           "min-width": 120,
           "show-overflow-tooltip": true,
         },
-
         { prop: "createDate", label: "创建时间", width: 155 },
         { prop: "updateDate", label: "更新时间", width: 155 },
         {

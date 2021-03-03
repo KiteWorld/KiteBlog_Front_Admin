@@ -207,13 +207,13 @@ import {
   deleteUsers,
   saveUser,
   queryUserById,
-} from "../api/api";
+} from "@/api/api";
 import {
   USER_STATUS,
   TOC_USER_ROLE,
   USER_SEX,
   USER_STATUS_TAG_TYPE,
-} from "../common/eum";
+} from "@/common/eum";
 import UploadAvatar from "@/components/UploadAvatar";
 import {
   userName,

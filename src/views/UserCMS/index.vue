@@ -142,9 +142,9 @@ import {
   queryCMSUserById,
   saveCMSUser,
   queryJobNoMax,
-} from "../api/api";
+} from "@/api/api";
 import { userName, password, userRole, jobNo } from "@/common/rules";
-import { CMS_USER_ROLE } from "../common/eum";
+import { CMS_USER_ROLE } from "@/common/eum";
 import Cookies from "js-cookie";
 import { checkTableSelect, showPopoverHandle } from "@/common/mixin";
 import UploadAvatar from "@/components/UploadAvatar";

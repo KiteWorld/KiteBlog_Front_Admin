@@ -35,7 +35,7 @@
           </tr>
         </table>
       </div>
-      <img src="../assets/logo.png" alt="logo" class="logo" />
+      <img src="@/assets/logo.png" alt="logo" class="logo" />
       <el-form
         :model="loginForm"
         ref="form"
@@ -63,7 +63,7 @@
 
 <script>
 import Cookies from "js-cookie";
-import { adminLogin } from "../api/api";
+import { adminLogin } from "@/api/api";
 export default {
   name: "Login",
   data() {
