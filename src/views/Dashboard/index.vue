@@ -30,10 +30,24 @@
         </el-col>
       </el-row>
       <el-row :gutter="20" class="total-card-container">
-        <el-col :span="12" :offset="0">
-          <PieChart />
+        <el-col :span="24" :offset="0">
+          <MapChart />
         </el-col>
-        <el-col :span="12" :offset="0"></el-col>
+      </el-row>
+
+      <el-row :gutter="20" class="total-card-container">
+        <el-col :sm="24" :md="12">
+          <PieChart
+            :socketType="'articleCatTotal'"
+            :coustomOption="articlePieChartOption"
+          />
+        </el-col>
+        <el-col :sm="24" :md="12">
+          <PieChart
+            :socketType="'hotPointCatTotal'"
+            :coustomOption="hotPointPieChartOption"
+          />
+        </el-col>
       </el-row>
 
       <!-- <div style="background-color: red; height: 20px; width: 100%"></div> -->
@@ -74,7 +88,7 @@ import TotalCard from "./components/TotalCard";
 import BarChart from "./components/BarChart";
 import LineChart from "./components/LineChart";
 import PieChart from "./components/PieChart";
-// import SocketService from "@/utils/webscoket";
+import MapChart from "./components/MapChart";
 export default {
   name: "Dashboard",
   components: {
@@ -82,11 +96,20 @@ export default {
     BarChart,
     LineChart,
     PieChart,
+    MapChart,
   },
   data() {
     return {
       socketType: "total",
       totalData: {},
+      articlePieChartOption: {
+        title: "文章分类数量占比",
+        name: "文章分类数量",
+      },
+      hotPointPieChartOption: {
+        title: "热点分类数量占比",
+        name: "热点分类数量",
+      },
     };
   },
   created() {

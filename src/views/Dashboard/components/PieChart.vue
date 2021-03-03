@@ -10,10 +10,6 @@ require("echarts/theme/macarons");
 export default {
   name: "BarChart",
   props: {
-    // className: {
-    //   type: String,
-    //   default: "chart",
-    // },
     width: {
       type: String,
       default: "100%",
@@ -22,16 +18,20 @@ export default {
       type: String,
       default: "400px",
     },
-    // color: {
-    //   type: Array,
-    //   default: () => ["#dc69aa"],
-    // },
+    socketType: {
+      type: String,
+      default: "articleCatTotal",
+    },
+    coustomOption: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
       chart: null,
       option: {},
-      socketType: "catTotal",
+      //   socketType: "articleCatTotal",
     };
   },
   created() {
@@ -40,6 +40,7 @@ export default {
       socketType: this.socketType,
       millisecond: 60000 * 10,
     });
+	console.log(this.coustomOption)
   },
   mounted() {
     this.$nextTick(() => {
@@ -50,39 +51,51 @@ export default {
     initChart() {
       this.chart = this.$echarts.init(this.$el, "macarons");
       this.option = {
+        title: {
+          //   text: "文章分类数量占比",
+          text: this.coustomOption.title,
+          left: "center",
+        },
         tooltip: {
           trigger: "item",
+          textStyle: {
+            color: "#fff",
+          },
         },
         legend: {
-          top: "5%",
+          top: "8%",
           left: "center",
+          type: "scroll",
         },
         series: [
           {
-            name: "访问来源",
+            name: this.coustomOption.name,
             type: "pie",
             top: "14%",
-            radius: ["40%", "84%"],
+            radius: [0, "90%"],
             avoidLabelOverlap: false,
             label: {
-              show: false,
-              position: "center",
+              show: true,
+              fontSize: "12",
+              position: "inner",
+              formatter: "{b} {d}%",
             },
             emphasis: {
               label: {
                 show: true,
-                fontSize: "20",
+                fontSize: "14",
                 fontWeight: "bold",
+              },
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.2)",
               },
             },
             labelLine: {
               show: false,
             },
-            data: [
-              { value: 1048, name: "搜索引擎" },
-              { value: 735, name: "直接访问" },
-              { value: 580, name: "邮件营销" },
-            ],
+            data: [],
           },
         ],
       };
@@ -92,6 +105,13 @@ export default {
       });
     },
     getData(data) {
+      this.option.series[0].data = [];
+      data.catTotal.forEach((x) => {
+        this.option.series[0].data.push({
+          value: x.total,
+          name: x.categoryName,
+        });
+      });
       this.chart.setOption(this.option);
     },
   },

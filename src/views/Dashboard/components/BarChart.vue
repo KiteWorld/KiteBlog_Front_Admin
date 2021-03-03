@@ -52,16 +52,19 @@ export default {
       this.chart = this.$echarts.init(this.$el, "macarons");
       this.option = {
         title: {
-          text: "最受欢迎的十篇文章",
+          text: "最受欢迎的十篇文章(点赞率)",
           left: "center",
         },
-        // tooltip: {
-        //   // trigger: "axis",
-        //   // axisPointer: {
-        //   //   type: "shadow",
-        //   // },
-        //   formatter:'{c}%'
-        // },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
+          },
+          textStyle: {
+            color: "#fff",
+          },
+          formatter: "{c}%",
+        },
         toolbox: {
           show: true,
           right: "4%",
@@ -100,16 +103,15 @@ export default {
           containLabel: true,
         },
         xAxis: {
-          show: false,
-          // type: "value",
-          // name: "点赞率",
-          // axisLabel: {
-          //   textStyle: {
-          //     // color: "#59abfd",
-          //     fontSize: "12",
-          //   },
-          //   formatter: "{value}%",
-          // },
+          show: true,
+          type: "value",
+          name: "点赞率",
+          axisLabel: {
+            textStyle: {
+              fontSize: "12",
+            },
+            formatter: "{value}%",
+          },
         },
         yAxis: [
           {
@@ -119,7 +121,6 @@ export default {
             inverse: true, //取反
             axisLabel: {
               textStyle: {
-                // color: "#59abfd",
                 fontSize: "12",
               },
               formatter: (params) => {
@@ -132,22 +133,6 @@ export default {
               show: false,
             },
           },
-          {
-            show: true,
-            inverse: true,
-            data: [],
-            axisTick: { show: false },
-            axisLabel: {
-              textStyle: {
-                fontSize: 12,
-              },
-              formatter: (params) =>
-                parseFloat((params * 100).toFixed(2)) + "%",
-            },
-            axisLine: {
-              show: false,
-            },
-          },
         ],
         series: [
           {
@@ -155,7 +140,7 @@ export default {
             data: [],
             itemStyle: {
               barBorderRadius: 3,
-              opacity: 0.8,
+              opacity: 0.9,
             },
           },
         ],
@@ -170,7 +155,7 @@ export default {
       const hotRang = [];
       data.articleHot10.forEach((x) => {
         articleTitle.push(x.articleTitle);
-        hotRang.push(x.hotRang || 0);
+        hotRang.push(parseFloat((x.hotRang * 100).toFixed(2)) || 0);
       });
       if (articleTitle.length < 10) {
         for (let i = articleTitle.length; i < 10; i++) {
@@ -178,8 +163,7 @@ export default {
         }
       }
       this.option.yAxis[0].data = articleTitle;
-      this.option.yAxis[1].data = hotRang;
-      console.log(hotRang);
+      // this.option.yAxis[1].data = hotRang;
       this.option.series[0].data = hotRang;
       this.chart.setOption(this.option);
     },

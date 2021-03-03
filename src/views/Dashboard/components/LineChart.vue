@@ -57,6 +57,9 @@ export default {
         },
         tooltip: {
           trigger: "axis",
+          textStyle: {
+            color: "#fff",
+          },
           //   axisPointer: {
           //     type: "cross",
           //     label: {
