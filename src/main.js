@@ -19,7 +19,6 @@ Vue.component('Table', Table);
 Vue.component('SearchInput', SearchInput);
 
 const ws = new SocketService(process.env.VUE_APP_API_WS + "dashboard")
-ws.connect()
 Vue.prototype.$ws = ws;
 
 // let setObj = new Set()

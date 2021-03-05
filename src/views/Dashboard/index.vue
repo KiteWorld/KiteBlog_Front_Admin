@@ -113,6 +113,7 @@ export default {
     };
   },
   created() {
+    this.$ws.connect()
     this.$ws.registerCallback(this.socketType, this.getData);
     this.$ws.send({
       socketType: this.socketType,
