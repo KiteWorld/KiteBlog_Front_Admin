@@ -1,6 +1,27 @@
 <template>
   <div class="container">
     <div class="login-form-container" @keyup.enter="submit">
+      <img src="@/assets/logo.png" alt="logo" class="logo" />
+      <el-form
+        :model="loginForm"
+        ref="form"
+        :rules="rules"
+        label-width="80px"
+        class="login-form"
+      >
+        <el-form-item label="工号：" prop="jobNo">
+          <el-input v-model="loginForm.jobNo"></el-input>
+        </el-form-item>
+        <el-form-item label="密码：" prop="password">
+          <el-input v-model="loginForm.password" type="password"></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="footer">
+        <el-button type="primary" :plain="false" @click="submit"
+          >登录</el-button
+        >
+        <el-button @click="reset">重置</el-button>
+      </div>
       <div class="tip">
         <table>
           <tr>
@@ -29,33 +50,11 @@
             <td>123123</td>
           </tr>
           <tr>
-            <td>游客</td>
+            <td>看客</td>
             <td>000004</td>
             <td>123123</td>
           </tr>
         </table>
-      </div>
-      <img src="@/assets/logo.png" alt="logo" class="logo" />
-      <el-form
-        :model="loginForm"
-        ref="form"
-        :rules="rules"
-        label-width="80px"
-        :inline="false"
-        class="login-form"
-      >
-        <el-form-item label="工号：" prop="jobNo">
-          <el-input v-model="loginForm.jobNo"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="loginForm.password" type="password"></el-input>
-        </el-form-item>
-      </el-form>
-      <div class="footer">
-        <el-button type="primary" :plain="false" @click="submit"
-          >登录</el-button
-        >
-        <el-button @click="reset">重置</el-button>
       </div>
     </div>
   </div>
@@ -139,30 +138,13 @@ export default {
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgb(196, 196, 196);
-    width: 300px;
-    height: 200px;
     padding: 20px;
-    .tip {
-      position: absolute;
-      bottom: -180px;
-      line-height: 20px;
-      background: #fff;
-      border-radius: 5px;
-      box-shadow: 0px 0px 10px rgb(196, 196, 196);
-      padding: 10px;
-      width: 100%;
-      box-sizing: border-box;
-      list-style: none;
-      table {
-        width: 100%;
-        text-align: center;
-      }
-    }
     .logo {
       position: absolute;
       top: 0;
+      left: 50%;
       background-color: #fff;
-      transform: translateY(-60%);
+      transform: translate(-50%, -50%);
       width: 110px;
       height: 110px;
       border-radius: 50%;
@@ -170,6 +152,24 @@ export default {
     }
     .login-form {
       margin-top: 50px;
+    }
+    .tip {
+      position: absolute;
+      bottom: -260px;
+      left: 50%;
+      right: 50%;
+      line-height: 20px;
+      background: #fff;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgb(196, 196, 196);
+      padding: 10px;
+      width: 100%;
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      table {
+        width: 100%;
+        text-align: center;
+      }
     }
   }
 }

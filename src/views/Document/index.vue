@@ -21,7 +21,7 @@
           >管理后台</a
         >
         <a target="_blank" href="https://gitee.com/KiteWorld/KiteBlog_Front_ToC"
-          >前端页面(未开发)</a
+          >ToC前台页面(未开发)</a
         >
       </li>
       <li>
@@ -37,7 +37,7 @@
         <a
           target="_blank"
           href="https://github.com/KiteWorld/KiteBlog_Front_ToC"
-          >前端页面(未开发)</a
+          >ToC前台页面(未开发)</a
         >
       </li>
     </ul>

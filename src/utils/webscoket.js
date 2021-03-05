@@ -19,6 +19,7 @@ export default class socketService {
 		this.ws = new WebSocket(this.url, [
 			Cookies.get("token"),
 		]);
+		// this.ws = new WebSocket(this.url);
 
 		this.ws.onopen = () => {
 			console.log("WebSocket 服务器链接成功！")
