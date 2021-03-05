@@ -228,7 +228,7 @@ export default {
           h(
             "a",
             {
-              class: "router",
+              class: "notify-router",
               on: {
                 click: () => {
                   this.notifyInstance.close();
@@ -412,7 +412,7 @@ export default {
 /deep/.CodeMirror {
   height: 450px;
 }
-.router {
+.notify-router {
   text-decoration: none;
   display: block;
   margin: 0 auto;

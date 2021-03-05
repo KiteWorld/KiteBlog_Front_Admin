@@ -376,8 +376,8 @@ export default {
         articleIds: this.rows.map((x) => x.articleId),
       };
       let res = await updateArticleType(params);
-      this.$message.success(res.msg);
       if (res.code === 0) {
+        this.$message.success(res.msg);
         this.recomPopoverVisible = false;
         this.search();
       }

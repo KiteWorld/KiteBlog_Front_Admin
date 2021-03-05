@@ -173,11 +173,11 @@ export default {
     };
   },
   async created() {
-    this.$ws.registerCallback(this.socketType, this.getData);
-    this.$ws.send({
-      socketType: this.socketType,
-      millisecond: 60000 * 10,
-    });
+    // this.$ws.registerCallback(this.socketType, this.getData);
+    // this.$ws.send({
+    //   socketType: this.socketType,
+    //   millisecond: 60000 * 10,
+    // });
   },
   mounted() {
     this.$nextTick(() => {
@@ -189,16 +189,19 @@ export default {
       this.chart = this.$echarts.init(this.$el, "macarons");
       this.$echarts.registerMap("china", china);
       this.option = {
+		title:{
+			text:"用户分布（目前未前端假数据，后端未实现）"
+		},
         tooltip: {
           //   triggerOn: "hover",
           textStyle: {
             color: "#fff",
           },
-          formatter: function (e) {
-            return 0.5 == e.value
-              ? e.name + "：有疑似病例"
-              : e.seriesName + "<br />" + e.name + "：" + e.value;
-          },
+        //   formatter: function (e) {
+        //     return 0.5 == e.value
+        //       ? e.name + "：有疑似病例"
+        //       : e.seriesName + "<br />" + e.name + "：" + e.value;
+        //   },
         },
         visualMap: {
           min: 0,

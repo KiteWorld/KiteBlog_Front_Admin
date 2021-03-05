@@ -105,7 +105,6 @@ export default {
         xAxis: {
           show: true,
           type: "value",
-          name: "点赞率",
           axisLabel: {
             textStyle: {
               fontSize: "12",

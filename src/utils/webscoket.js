@@ -20,7 +20,6 @@ export default class socketService {
 			Cookies.get("token"),
 		]);
 		// this.ws = new WebSocket(this.url);
-
 		this.ws.onopen = () => {
 			console.log("WebSocket 服务器链接成功！")
 			this.connected = true
@@ -53,7 +52,7 @@ export default class socketService {
 		this.callBackMapping[socketType] = callback
 	}
 	send(data) {
-		if (this.connected) {
+		if (this.connected && this.ws.readyState === 1) {
 			this.sendRetryCount = 0
 			this.ws.send(JSON.stringify(data))
 		} else {

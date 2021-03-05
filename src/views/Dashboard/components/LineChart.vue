@@ -52,7 +52,7 @@ export default {
       this.chart = this.$echarts.init(this.$el, "macarons");
       this.option = {
         title: {
-          text: "增长趋势",
+          text: "近15天增长趋势",
           left: "center",
         },
         tooltip: {
@@ -102,7 +102,7 @@ export default {
             emphasis: {
               focus: "series",
             },
-            data: [120, 132, 101, 134],
+            data: [],
           },
           {
             name: "文章增长",
@@ -114,7 +114,7 @@ export default {
             emphasis: {
               focus: "series",
             },
-            data: [220, 182, 191, 234],
+            data: [],
           },
           {
             name: "沸点增长",
@@ -126,7 +126,7 @@ export default {
             emphasis: {
               focus: "series",
             },
-            data: [150, 232, 201, 154],
+            data: [],
           },
         ],
       };
