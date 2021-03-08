@@ -190,7 +190,7 @@ export default {
       this.$echarts.registerMap("china", china);
       this.option = {
 		title:{
-			text:"用户分布（目前未前端假数据，后端未实现）"
+			text:"用户分布（目前为前端假数据，后端未实现）"
 		},
         tooltip: {
           //   triggerOn: "hover",

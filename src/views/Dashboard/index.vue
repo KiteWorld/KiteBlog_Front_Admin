@@ -61,6 +61,7 @@ import BarChart from "./components/BarChart";
 import LineChart from "./components/LineChart";
 import PieChart from "./components/PieChart";
 import MapChart from "./components/MapChart";
+import { mapState } from "vuex";
 export default {
   name: "Dashboard",
   components: {
@@ -84,6 +85,11 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapState({
+      isShowedNotify: (state) => state.dashboard.isShowedNotify,
+    }),
+  },
   created() {
     this.$ws.connect();
     this.$ws.registerCallback(this.socketType, this.getData);
@@ -93,30 +99,33 @@ export default {
     });
   },
   mounted() {
-    const h = this.$createElement;
-    const dom = [
-      h("p", "操作前请先查看文档以及注意事项"),
-      h(
-        "a",
-        {
-          class: "notify-router",
-          on: {
-            click: () => {
-              this.notifyInstance.close();
-              this.$router.push({name:"Document"});
+    if (!this.isShowedNotify) {
+      const h = this.$createElement;
+      const dom = [
+        h("p", "操作前请先查看文档以及注意事项"),
+        h(
+          "a",
+          {
+            class: "notify-router",
+            on: {
+              click: () => {
+                this.notifyInstance.close();
+                this.$router.push({ name: "Document" });
+              },
             },
           },
-        },
-        "跳转到「文档页面」"
-      ),
-    ];
-    this.notifyInstance = this.$notify({
-      title: "提示",
-      duration: 15000,
-      type: "warning",
-      dangerouslyUseHTMLString: true,
-      message: h("div", {}, dom),
-    });
+          "跳转到「文档页面」"
+        ),
+      ];
+      this.notifyInstance = this.$notify({
+        title: "提示",
+        duration: 15000,
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+        message: h("div", {}, dom),
+      });
+      this.$store.dispatch("dashboard/isShowedNotify");
+    }
   },
   methods: {
     getData(data) {

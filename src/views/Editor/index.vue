@@ -412,15 +412,5 @@ export default {
 /deep/.CodeMirror {
   height: 450px;
 }
-.notify-router {
-  text-decoration: none;
-  display: block;
-  margin: 0 auto;
-  width: 70%;
-  color: #fff;
-  padding: 5px;
-  text-align: center;
-  background: #409eff;
-  border-radius: 3px;
-}
+
 </style>
